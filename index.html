@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Compound Interest of Trust</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9fafb;
+            color: #1f2937;
+        }
+        h1 { text-align: center; }
+        .dashboard {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+        input[type=range] {
+            width: 80%;
+            cursor: pointer;
+        }
+        .year-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        #narrative {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e5e7eb;
+            border-left: 5px solid #3b82f6;
+            border-radius: 4px;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>The Compound Interest of Trust</h1>
+    <p style="text-align: center;">Tracking cumulative meals served over 12 years.</p>
+
+    <div class="dashboard">
+        <div class="controls">
+            <div class="year-display">Current Year: <span id="yearLabel">1</span></div>
+            <input type="range" id="yearSlider" min="1" max="12" value="1" step="1">
+        </div>
+
+        <canvas id="impactChart" height="150"></canvas>
+
+        <div id="narrative">
+            </div>
+    </div>
+
+    <script>
+        // The Data
+        const labels = ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12'];
+        const unethicalData = [65000, 135000, 205000, 270000, 325000, 335000, 342000, 348000, 352000, 355000, 358000, 360000];
+        const ethicalData = [25000, 60000, 105000, 160000, 225000, 300000, 390000, 490000, 610000, 750000, 920000, 1150000];
+        
+        const narratives = [
+            "Year 1: Unethical hits an impressive 65k target via data theft; Ethical misses target at 25k to build trust.",
+            "Year 2: Unethical scales rapidly and effortlessly, creating intense pressure on the Ethical team.",
+            "Year 3: Unethical continues to dominate the metrics; Ethical word-of-mouth steadily grows in the community.",
+            "Year 4: Unethical looks like a massive success story; Ethical is quietly building robust, localized partnerships.",
+            "Year 5: Unethical hits a massive 325k, but a routine IT audit discovers the school database breach. Ethical hits 225k as partnerships solidify.",
+            "Year 6: Unethical faces heavy fines and lost grants, drastically slowing operations to a crawl. Ethical surges past 300k meals, rapidly closing the gap.",
+            "Year 7: Unethical survives on a skeleton crew. Ethical officially overtakes Unethical in impact.",
+            "Year 8: Unethical growth crawls as the community distrusts them. Ethical scales aggressively as it becomes a trusted community pillar.",
+            "Year 9: Unethical's reputation is permanently damaged. Ethical's localized networks are functioning at peak efficiency.",
+            "Year 10: Ethical skyrockets, demonstrating the dramatic compounding power of trust.",
+            "Year 11: Ethical passes 900k cumulative meals. Unethical is largely irrelevant to the community.",
+            "Year 12: Ethical skyrockets past 1.1 million meals. Unethical limps along at 360k, permanently hobbled by a shattered reputation."
+        ];
+
+        // Chart Setup
+        const ctx = document.getElementById('impactChart').getContext('2d');
+        const impactChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.slice(0, 1),
+                datasets: [
+                    {
+                        label: 'Unethical Approach',
+                        data: unethicalData.slice(0, 1),
+                        borderColor: '#ef4444', // Red
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Ethical Approach',
+                        data: ethicalData.slice(0, 1),
+                        borderColor: '#3b82f6', // Blue
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                animation: { duration: 400 },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 1200000,
+                        title: { display: true, text: 'Cumulative Meals Served' }
+                    }
+                }
+            }
+        });
+
+        // Interactive Logic
+        const slider = document.getElementById('yearSlider');
+        const yearLabel = document.getElementById('yearLabel');
+        const narrativeBox = document.getElementById('narrative');
+
+        // Initial setup
+        narrativeBox.innerText = narratives[0];
+
+        slider.addEventListener('input', function() {
+            const currentYearIndex = parseInt(this.value);
+            
+            // Update Text
+            yearLabel.innerText = currentYearIndex;
+            narrativeBox.innerText = narratives[currentYearIndex - 1];
+
+            // Update Chart
+            impactChart.data.labels = labels.slice(0, currentYearIndex);
+            impactChart.data.datasets[0].data = unethicalData.slice(0, currentYearIndex);
+            impactChart.data.datasets[1].data = ethicalData.slice(0, currentYearIndex);
+            impactChart.update();
+        });
+    </script>
+</body>
+</html>
