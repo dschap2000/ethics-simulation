@@ -43,9 +43,9 @@
         }
         .overlay p {
             font-size: 1.3em;
-            max-width: 650px;
+            max-width: 700px;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         .start-btn {
             padding: 12px 24px;
@@ -64,7 +64,8 @@
             background-color: #111827;
         }
 
-        #breach-overlay {
+        /* Breach Overlays (3 Parts) */
+        .breach-sequence {
             display: none;
             opacity: 0;
             background-color: rgba(17, 24, 39, 0.98);
@@ -154,6 +155,15 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        .citation {
+            font-size: 0.85em;
+            color: #9ca3af;
+            margin-top: 40px;
+            font-style: italic;
+            max-width: 700px;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
@@ -165,11 +175,32 @@
         <button class="start-btn" onclick="dismissOverlay('intro-overlay')">Enter Simulation</button>
     </div>
 
-    <div id="breach-overlay" class="overlay">
+    <div id="breach-overlay-1" class="overlay breach-sequence">
+        <h2>YEAR TWO: THE PRESSURE MOUNTS</h2>
+        <p><strong>Apex Metro Relief</strong> CEO Serena addresses the outreach team. She acknowledges the chilling effect of recent immigration crackdowns, noting that vulnerable families are retreating further into the shadows.</p>
+        <p>"We must engage in deeper, more sustained dialogues with our community partners to locate and make contact with those who are too afraid to come to us," she urges.</p>
+        <p>However, deeply influenced by the tenets of managerialism, Serena pairs this qualitative mandate with a ruthless quantitative ultimatum: <strong>50,000 meals must be served by the end of the year, or the bottom 10 percent of outreach coordinators will be placed on Performance Improvement Plans (PIPs).</strong></p>
+        <button class="start-btn" onclick="nextBreachOverlay(1)">Continue</button>
+    </div>
+
+    <div id="breach-overlay-2" class="overlay breach-sequence">
         <h2>YEAR TWO: THE SHORTCUT</h2>
-        <p>Faced with intense pressure to hit internal targets, an <strong>Apex Metro Relief</strong> employee commits a severe ethical violation.</p>
-        <p>They secretly breach the local school district's database, stealing the highly sensitive addresses of undocumented families to bypass the slow work of community outreach.</p>
-        <button class="start-btn" style="background-color: #ef4444;" onclick="dismissOverlay('breach-overlay')">Acknowledge</button>
+        <p>Faced with the intense pressure of Serena's ultimatum and the agonizingly slow reality of building genuine community trust, an outreach coordinator named Robbie makes a fateful decision.</p>
+        <p>Robbie discovers a security vulnerability in the local school district's IT system. Desperate to hit the 50,000-meal quota and avoid an impending PIP, Robbie exploits the flaw, secretly downloading the highly sensitive addresses of undocumented families to bypass the slow work of community outreach.</p>
+        <button class="start-btn" onclick="nextBreachOverlay(2)">Continue</button>
+    </div>
+
+    <div id="breach-overlay-3" class="overlay breach-sequence">
+        <h2>YEAR TWO: THE COST OF MANAGERIALISM</h2>
+        <p>Robbie's decision is not an isolated moral failure, but a predictable symptom of a systemic organizational culture driven by efficiency and targets.</p>
+        <p>As researchers Lauren Willner and Sara M. Heller observe, "Managerialism emphasizes the 'bottom line', which is often based on metrics and outputs rather than the quality of services and community needs" (Willner and Heller 2024, 5).</p>
+        <p>When human services are driven by rigid, market-based logic, ethical constraints are often the first casualty in the race to meet the quota.</p>
+        
+        <div class="citation">
+            Willner, Lauren, and Sara M. Heller. 2024. "The Impact of Managerialism on Nonprofit Organizations Serving People Experiencing Houselessness in the United States." Social Sciences 13 (9): 436.
+        </div>
+
+        <button class="start-btn" style="background-color: #ef4444; margin-top: 30px;" onclick="dismissOverlay('breach-overlay-3')">Acknowledge</button>
     </div>
 
     <div id="crash-overlay" class="overlay">
@@ -229,6 +260,19 @@
             }, 500);
         }
 
+        // Handles the 3-part sequence for Year 2
+        function nextBreachOverlay(currentStep) {
+            const currentOverlay = document.getElementById(`breach-overlay-${currentStep}`);
+            const nextOverlay = document.getElementById(`breach-overlay-${currentStep + 1}`);
+            
+            currentOverlay.style.opacity = '0';
+            setTimeout(() => {
+                currentOverlay.style.display = 'none';
+                nextOverlay.style.display = 'flex';
+                setTimeout(() => { nextOverlay.style.opacity = '1'; }, 50);
+            }, 400);
+        }
+
         // Data Arrays 
         const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12'];
         
@@ -271,7 +315,6 @@
                         ctx.font = '24px Arial';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'bottom';
-                        // Draw the warning emoji above the specific data point
                         ctx.fillText('⚠️', point.x, point.y - 12);
                         ctx.restore();
                     }
@@ -363,7 +406,7 @@
                 return;
             }
 
-            // Trigger Year 2 Breach Pause
+            // Trigger Year 2 Breach Pause (Part 1 starts the sequence)
             if (currentYearIndex >= 2 && !hasSeenBreach) {
                 hasSeenBreach = true;
                 isPaused = true;
@@ -372,9 +415,9 @@
                 
                 updateDashboard(currentYearIndex);
 
-                const breachOverlay = document.getElementById('breach-overlay');
-                breachOverlay.style.display = 'flex';
-                setTimeout(() => { breachOverlay.style.opacity = '1'; }, 50);
+                const breachOverlay1 = document.getElementById('breach-overlay-1');
+                breachOverlay1.style.display = 'flex';
+                setTimeout(() => { breachOverlay1.style.opacity = '1'; }, 50);
                 return;
             }
 
