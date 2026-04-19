@@ -63,7 +63,7 @@
 
         #intro-overlay { background-color: #111827; }
 
-        /* Breach Sequence (Solid Black) */
+        /* Breach Sequence */
         .breach-sequence {
             display: none;
             opacity: 1; 
@@ -176,6 +176,54 @@
             min-height: 60px;
             transition: opacity 0.3s;
         }
+
+        /* --- YEAR 8: DYNAMIC RESILIENCE ANCHOR --- */
+        #chart-container {
+            position: relative;
+            width: 100%;
+        }
+        #resilience-anchor {
+            display: none;
+            position: absolute;
+            z-index: 200;
+            transition: opacity 0.5s ease-out;
+        }
+        .res-line {
+            width: 3px;
+            background-color: #3b82f6; 
+            height: 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-50%);
+            animation: shootUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        .res-box {
+            position: absolute;
+            bottom: 120px;
+            right: 0; /* Expands to the left from the line */
+            width: 0;
+            background: white;
+            border: 3px solid #3b82f6;
+            border-radius: 8px 0 8px 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            white-space: nowrap;
+            animation: expandLeft 0.6s 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        .res-content {
+            opacity: 0;
+            padding: 20px;
+            width: 420px; 
+            white-space: normal;
+            animation: fadeInText 0.4s 1.2s forwards;
+            color: #1f2937;
+        }
+        
+        @keyframes shootUp { to { height: 120px; } }
+        @keyframes expandLeft { to { width: 420px; } }
+        @keyframes fadeInText { to { opacity: 1; } }
+        /* ------------------------------------------ */
         
         /* Event Card Styles */
         .event-card {
@@ -287,8 +335,22 @@
             </div>
         </div>
 
-        <div>
+        <div id="chart-container">
             <canvas id="impactChart" height="200"></canvas>
+            
+            <div id="resilience-anchor">
+                <div class="res-line"></div>
+                <div class="res-box">
+                    <div class="res-content">
+                        <h3 style="margin-top: 0; color: #3b82f6;">Organizational Resilience</h3>
+                        <p style="font-size: 0.95em; line-height: 1.4;">While Apex crashed and burned from its unethical foundation, Forward Community Pantry absorbed the sector-wide shockwave. Organizational resilience is <em>"the ability of an organization to respond and adapt to incremental changes and sudden disruptions while also constantly anticipating and preparing for future challenges in order to sustainably meet [the organization's] mission."</em></p>
+                        <div style="font-size: 0.8em; color: #6b7280; font-style: italic; margin-top: 10px;">
+                            Miller-Stevens et al. 2022, 1214 (citing Quad Innovation Partnership, 2020)
+                        </div>
+                        <button class="start-btn" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 8px;" onclick="dismissResilience()">Proceed</button>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div id="narrative"></div>
@@ -325,7 +387,6 @@
                 msg.rate = 0.9;
                 msg.pitch = 1.1;
                 
-                // Try to find a female voice
                 const voices = window.speechSynthesis.getVoices();
                 const femaleVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('samantha'));
                 if (femaleVoice) {
@@ -335,8 +396,6 @@
                 window.speechSynthesis.speak(msg);
             }
         }
-
-        // Initialize voices on user load to prevent delay
         window.speechSynthesis.getVoices();
 
         // --- Swooping Animation Logic ---
@@ -346,12 +405,10 @@
             const floater = document.getElementById('floating-narrative');
             const target = document.getElementById('narrative');
             
-            // Clear existing timeouts if user moves slider rapidly
             clearTimeout(swoopTimeout1);
             clearTimeout(swoopTimeout2);
             clearTimeout(swoopTimeout3);
             
-            // Reset floater to front and center
             floater.style.transition = 'none';
             floater.style.top = '40%';
             floater.style.left = '50%';
@@ -359,39 +416,34 @@
             floater.style.opacity = '0';
             floater.innerText = text;
             
-            // Hide the text in the actual target box temporarily
             target.style.opacity = '0.3';
-            target.innerText = text; // Set it invisibly for layout purposes
+            target.innerText = text; 
 
-            // Phase 1: Fade in prominently
             swoopTimeout1 = setTimeout(() => {
                 floater.style.transition = 'opacity 0.4s ease-out';
                 floater.style.opacity = '1';
             }, 50);
 
-            // Phase 2: Swoop down
             swoopTimeout2 = setTimeout(() => {
                 const targetRect = target.getBoundingClientRect();
                 const floaterRect = floater.getBoundingClientRect();
-                
-                // Calculate the distance to move down
                 const deltaY = targetRect.top - floaterRect.top;
                 
                 floater.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
                 floater.style.transform = `translate(-50%, calc(-50% + ${deltaY + 20}px)) scale(0.8)`;
                 floater.style.opacity = '0';
                 
-                // Phase 3: Reveal the real text box
                 swoopTimeout3 = setTimeout(() => {
                     target.style.opacity = '1';
                 }, 500);
-            }, 2000); // Wait 2 seconds for the user to read it overlayed
+            }, 2000); 
         }
 
         // --- Cinematic Overlay Control ---
         let isPaused = false;
         let hasSeenBreach = false;
         let hasSeenCrash = false;
+        let hasSeenResilience = false;
         let hasSeenDeath = false;
 
         function dismissIntro() {
@@ -428,10 +480,20 @@
             }, 500);
         }
 
+        function dismissResilience() {
+            const anchor = document.getElementById('resilience-anchor');
+            anchor.style.opacity = '0';
+            setTimeout(() => {
+                anchor.style.display = 'none';
+                isPaused = false;
+                updateButtons();
+            }, 500);
+        }
+
         function dismissDeath() {
             const overlay = document.getElementById('death-overlay');
             overlay.style.opacity = '0';
-            window.speechSynthesis.cancel(); // Stop audio if they click past quickly
+            window.speechSynthesis.cancel(); 
             setTimeout(() => { 
                 overlay.style.display = 'none'; 
                 isPaused = false; 
@@ -601,6 +663,31 @@
                 const crashOverlay = document.getElementById('crash-overlay');
                 crashOverlay.style.display = 'flex';
                 setTimeout(() => { crashOverlay.style.opacity = '1'; }, 50);
+                updateButtons();
+                return;
+            }
+
+            // Year 8 Resilience Callout
+            if (currentYearIndex >= 8 && !hasSeenResilience) {
+                hasSeenResilience = true;
+                isPaused = true;
+                slider.value = 8;
+                currentYearIndex = 8;
+                updateDashboard(currentYearIndex);
+                
+                // Fetch the exact coordinates of Apex's Year 8 dot after chart draws
+                setTimeout(() => {
+                    const meta = impactChart.getDatasetMeta(0); // Apex dataset
+                    const point = meta.data[8];
+                    if (point) {
+                        const anchor = document.getElementById('resilience-anchor');
+                        anchor.style.left = point.x + 'px';
+                        anchor.style.top = point.y + 'px';
+                        anchor.style.display = 'block';
+                        setTimeout(() => { anchor.style.opacity = '1'; }, 50);
+                    }
+                }, 450); // wait for chart animation to finish drawing
+                
                 updateButtons();
                 return;
             }
