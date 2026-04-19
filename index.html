@@ -8,25 +8,74 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            max-width: 800px; /* Kept narrow for vertical stacking */
+            max-width: 800px; 
             margin: 40px auto;
             padding: 20px;
             background-color: #f9fafb;
             color: #1f2937;
+            overflow-x: hidden;
         }
         h1 { text-align: center; }
+        
+        /* Cinematic Overlays */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            color: #ffffff;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 1s ease-in-out;
+        }
+        .overlay h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #ef4444;
+        }
+        .overlay p {
+            font-size: 1.3em;
+            max-width: 600px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .start-btn {
+            padding: 12px 24px;
+            font-size: 1.2em;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .start-btn:hover { background-color: #2563eb; }
+
+        #breach-overlay {
+            display: none;
+            opacity: 0;
+            background-color: rgba(0, 0, 0, 0.95);
+        }
+
+        /* Dashboard Styles */
         .dashboard {
             background: white;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
-            flex-direction: column; /* Forces vertical layout */
+            flex-direction: column; 
             gap: 20px;
         }
-        .controls {
-            text-align: center;
-        }
+        .controls { text-align: center; }
         input[type=range] {
             width: 80%;
             cursor: pointer;
@@ -44,14 +93,16 @@
             font-size: 1.1em;
             line-height: 1.5;
         }
+        
         /* Event Card Styles */
         .event-card {
             padding: 15px;
             border-radius: 8px;
-            display: none; /* Hidden by default */
+            display: none; 
             animation: fadeIn 0.5s ease-in-out;
             font-size: 1.1em;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 10px;
         }
         .event-success {
             background-color: #dcfce7;
@@ -71,6 +122,19 @@
 </head>
 <body>
 
+    <div id="intro-overlay" class="overlay">
+        <h2>The Mission</h2>
+        <p>Madison, Wisconsin.<br><br>Two organizations are dedicated to serving hungry people in the community. Amidst hostile immigration crackdowns, the mission is urgent: serve as many undocumented and fearful families as possible to ensure no one goes hungry in the shadows.</p>
+        <p>But how they achieve this goal will define their legacy.</p>
+        <button class="start-btn" onclick="startSimulation()">Enter Simulation</button>
+    </div>
+
+    <div id="breach-overlay" class="overlay">
+        <h2>YEAR TWO: THE SHORTCUT</h2>
+        <p>Faced with intense pressure to hit internal targets, an Apex Metro Relief employee commits a severe ethical violation.</p>
+        <p>They secretly breach the local school district's database, stealing the highly sensitive addresses of undocumented families to bypass the slow work of community outreach.</p>
+    </div>
+
     <h1>The Compound Interest of Trust</h1>
     <p style="text-align: center;">Tracking cumulative meals served over 12 years.</p>
 
@@ -87,41 +151,52 @@
         <div id="narrative"></div>
         
         <div id="alerts-container">
+            <div id="event-2" class="event-card event-danger">
+                <strong>🚨 Year 2:</strong> Apex Metro Relief silently breaches the school IT database.
+            </div>
             <div id="event-4" class="event-card event-success">
-                <strong>🤝 Year 4:</strong> Forward Community Pantry forms key local partnership! Community trust deepens.
+                <strong>🤝 Year 4:</strong> Forward Community Pantry forms key local partnerships! Trust deepens.
             </div>
-            <div id="event-5" class="event-card event-danger">
-                <strong>🚨 Year 5:</strong> School district IT audit! Data breach discovered!
+            <div id="event-8" class="event-card event-danger">
+                <strong>🛑 Year 8:</strong> Audit discovers the breach! Regulators freeze Apex Metro Relief's funding.
             </div>
-            <div id="event-6" class="event-card event-danger">
-                <strong>🛑 Year 6:</strong> Regulators freeze Apex Metro Relief's funding. Fines levied.
-            </div>
-            <div id="event-7" class="event-card event-success">
-                <strong>🏆 Year 7:</strong> Forward Community Pantry overtakes Apex Metro Relief and becomes the leading provider!
+            <div id="event-10" class="event-card event-success">
+                <strong>🏆 Year 10:</strong> Forward Community Pantry overtakes Apex Metro Relief!
             </div>
         </div>
     </div>
 
     <script>
-        // Data Arrays (Starting at Year 0)
+        // Cinematic Functions
+        function startSimulation() {
+            const intro = document.getElementById('intro-overlay');
+            intro.style.opacity = '0';
+            setTimeout(() => { intro.style.display = 'none'; }, 1000);
+        }
+
+        // Data Arrays 
         const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12'];
-        const unethicalData = [0, 65000, 135000, 205000, 270000, 325000, 335000, 342000, 348000, 352000, 355000, 358000, 360000];
-        const ethicalData = [0, 25000, 60000, 105000, 160000, 225000, 300000, 390000, 490000, 610000, 750000, 920000, 1150000];
+        
+        // Apex grows massively from 2 to 7 due to the breach, plateaus at 8
+        const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 600000, 620000, 630000, 635000, 638000, 640000];
+        
+        // Forward grows slowly but exponentially, crossing over at year 10
+        const ethicalData = [0, 15000, 35000, 60000, 95000, 140000, 200000, 280000, 380000, 500000, 660000, 860000, 1100000];
         
         const narratives = [
-            "Year 0: Initiation. Both organizations start at zero meals.",
-            "Year 1: Apex Metro Relief hits an impressive 65k target via data theft; Forward Community Pantry misses target at 25k to build trust.",
-            "Year 2: Apex Metro Relief scales rapidly and effortlessly, creating intense pressure on the Forward Community Pantry team.",
-            "Year 3: Apex Metro Relief continues to dominate the metrics; Forward Community Pantry word-of-mouth steadily grows in the community.",
-            "Year 4: Apex Metro Relief looks like a massive success story; Forward Community Pantry is quietly building robust, localized partnerships.",
-            "Year 5: Apex Metro Relief hits a massive 325k, but a routine IT audit discovers the school database breach. Forward Community Pantry hits 225k as partnerships solidify.",
-            "Year 6: Apex Metro Relief faces heavy fines and lost grants, drastically slowing operations to a crawl. Forward Community Pantry surges past 300k meals, rapidly closing the gap.",
-            "Year 7: Forward Community Pantry formally overtakes Apex Metro Relief in impact as their community networks scale.",
-            "Year 8: Apex Metro Relief growth crawls as the community distrusts them. Forward Community Pantry scales aggressively as it becomes a trusted community pillar.",
-            "Year 9: Apex Metro Relief's reputation is permanently damaged. Forward Community Pantry's localized networks are functioning at peak efficiency.",
-            "Year 10: Forward Community Pantry skyrockets, demonstrating the dramatic compounding power of trust.",
-            "Year 11: Forward Community Pantry passes 900k cumulative meals. Apex Metro Relief is largely irrelevant to the community.",
-            "Year 12: Forward Community Pantry skyrockets past 1.1 million meals. Apex Metro Relief limps along at 360k, permanently hobbled by a shattered reputation."
+            "Year 0: Initiation. Both organizations start at zero meals. The community need is high.",
+            "Year 1: Early efforts begin. Apex Metro Relief hits 20k; Forward Community Pantry reaches 15k.",
+            "Year 2: Data Breach. Apex bypasses outreach entirely by stealing school data. Their numbers spike instantly to 70k. Forward relies on slow word-of-mouth.",
+            "Year 3: Apex scales with praiseworthy efficiency, hitting 150k meals. Forward is slowly building trust.",
+            "Year 4: Apex's metrics are incredible. Forward hits 95k, but they successfully establish vital, localized trust networks with neighborhood leaders.",
+            "Year 5: Apex reaches 360k meals. They are viewed as the gold standard of efficiency in the city.",
+            "Year 6: Apex climbs to 480k. Forward's ground-game is gaining exponential momentum, hitting 200k meals.",
+            "Year 7: Peak Efficiency. Apex hits 600k meals. Forward reaches 280k, but their foundation is unshakeable.",
+            "Year 8: THE CRASH. A routine IT migration discovers Apex's historical data breach. Regulators freeze their funding and fine them heavily. Apex flatlines.",
+            "Year 9: Fallout. The community completely loses trust in Apex. Meanwhile, Forward's robust partnerships push them to 500k meals.",
+            "Year 10: THE CROSSOVER. Forward skyrockets to 660k meals, officially overtaking the paralyzed Apex.",
+            "Year 11: Forward demonstrates the compounding power of trust, hitting 860k meals. Apex is barely functioning.",
+            "Year 12: Forward skyrockets past 1.1 million meals. Apex limps along at 640k, permanently hobbled by a shattered reputation."
         ];
 
         // Chart Setup
@@ -132,7 +207,7 @@
                 labels: labels.slice(0, 1),
                 datasets: [
                     {
-                        label: 'Apex Metro Relief',
+                        label: 'Apex Metro Relief (Unethical)',
                         data: unethicalData.slice(0, 1),
                         borderColor: '#ef4444', 
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -141,7 +216,7 @@
                         fill: true
                     },
                     {
-                        label: 'Forward Community Pantry',
+                        label: 'Forward Community Pantry (Ethical)',
                         data: ethicalData.slice(0, 1),
                         borderColor: '#3b82f6', 
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -156,7 +231,6 @@
                 animation: { duration: 400 },
                 scales: {
                     y: {
-                        // THESE TWO LINES LOCK THE Y-AXIS
                         min: 0,
                         max: 1200000,
                         title: { display: true, text: 'Cumulative Meals Served' }
@@ -171,32 +245,70 @@
         const narrativeBox = document.getElementById('narrative');
         
         // Visual Event Cards
+        const event2 = document.getElementById('event-2');
         const event4 = document.getElementById('event-4');
-        const event5 = document.getElementById('event-5');
-        const event6 = document.getElementById('event-6');
-        const event7 = document.getElementById('event-7');
+        const event8 = document.getElementById('event-8');
+        const event10 = document.getElementById('event-10');
+
+        let hasSeenBreach = false;
+        let isPaused = false;
 
         // Initial setup
         narrativeBox.innerText = narratives[0];
 
-        slider.addEventListener('input', function() {
-            const currentYearIndex = parseInt(this.value);
-            
-            // Update Text
-            yearLabel.innerText = currentYearIndex;
-            narrativeBox.innerText = narratives[currentYearIndex];
+        function updateDashboard(index) {
+            yearLabel.innerText = index;
+            narrativeBox.innerText = narratives[index];
 
-            // Show Event Indicators dynamically based on the current year
-            event4.style.display = currentYearIndex >= 4 ? 'block' : 'none';
-            event5.style.display = currentYearIndex >= 5 ? 'block' : 'none';
-            event6.style.display = currentYearIndex >= 6 ? 'block' : 'none';
-            event7.style.display = currentYearIndex >= 7 ? 'block' : 'none';
+            // Toggle Event Cards
+            event2.style.display = index >= 2 ? 'block' : 'none';
+            event4.style.display = index >= 4 ? 'block' : 'none';
+            event8.style.display = index >= 8 ? 'block' : 'none';
+            event10.style.display = index >= 10 ? 'block' : 'none';
 
-            // Update Chart Data
-            impactChart.data.labels = labels.slice(0, currentYearIndex + 1);
-            impactChart.data.datasets[0].data = unethicalData.slice(0, currentYearIndex + 1);
-            impactChart.data.datasets[1].data = ethicalData.slice(0, currentYearIndex + 1);
+            // Update Chart
+            impactChart.data.labels = labels.slice(0, index + 1);
+            impactChart.data.datasets[0].data = unethicalData.slice(0, index + 1);
+            impactChart.data.datasets[1].data = ethicalData.slice(0, index + 1);
             impactChart.update();
+        }
+
+        slider.addEventListener('input', function(e) {
+            // Prevent sliding if the dramatic pause is active
+            if (isPaused) {
+                slider.value = 2;
+                return;
+            }
+
+            let currentYearIndex = parseInt(this.value);
+
+            // Trigger the Year 2 Cinematic Interruption
+            if (currentYearIndex >= 2 && !hasSeenBreach) {
+                hasSeenBreach = true;
+                isPaused = true;
+                slider.value = 2; 
+                currentYearIndex = 2;
+                
+                updateDashboard(currentYearIndex);
+
+                const breachOverlay = document.getElementById('breach-overlay');
+                breachOverlay.style.display = 'flex';
+                // slight delay to allow display:flex to apply before transitioning opacity
+                setTimeout(() => { breachOverlay.style.opacity = '1'; }, 50);
+
+                // Hold black screen for 4.5 seconds, then fade out
+                setTimeout(() => {
+                    breachOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        breachOverlay.style.display = 'none';
+                        isPaused = false; // Re-enable the slider
+                    }, 1000);
+                }, 4500);
+                
+                return;
+            }
+
+            updateDashboard(currentYearIndex);
         });
     </script>
 </body>
