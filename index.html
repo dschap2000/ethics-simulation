@@ -167,7 +167,7 @@
 
     <div id="breach-overlay" class="overlay">
         <h2>YEAR TWO: THE SHORTCUT</h2>
-        <p>Faced with intense pressure to hit internal targets, an Apex Metro Relief employee commits a severe ethical violation.</p>
+        <p>Faced with intense pressure to hit internal targets, an <strong>Apex Metro Relief</strong> employee commits a severe ethical violation.</p>
         <p>They secretly breach the local school district's database, stealing the highly sensitive addresses of undocumented families to bypass the slow work of community outreach.</p>
         <button class="start-btn" style="background-color: #ef4444;" onclick="dismissOverlay('breach-overlay')">Acknowledge</button>
     </div>
@@ -232,8 +232,8 @@
         // Data Arrays 
         const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12'];
         
-        // Apex grows massively from 2 to 6, crashes at 7
-        const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 500000, 510000, 515000, 518000, 520000, 521000];
+        // Apex grows massively from 2 to 6, hits 530k at 7, then crashes/plateaus
+        const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 530000, 535000, 538000, 540000, 541000, 542000];
         
         // Forward grows slowly but exponentially, crossing over at year 10
         const ethicalData = [0, 15000, 35000, 60000, 95000, 140000, 200000, 280000, 380000, 500000, 660000, 860000, 1100000];
@@ -242,17 +242,42 @@
             "Year 0: Initiation. Both organizations start at zero meals. The community need is high.",
             "Year 1: Early efforts begin. Apex Metro Relief hits 20k; Forward Community Pantry reaches 15k.",
             "Year 2: Data Breach. Apex bypasses outreach entirely by stealing school data. Their numbers spike instantly to 70k. Forward relies on slow word-of-mouth.",
-            "Year 3: Apex scales with praiseworthy efficiency, hitting 150k meals. Forward is slowly building trust.",
+            "Year 3: Apex scales with praiseworthy efficiency, hitting 150k meals. Forward is slowly building community trust.",
             "Year 4: Apex's metrics are incredible. Forward hits 95k, but they successfully establish vital, localized trust networks with neighborhood leaders.",
             "Year 5: Apex reaches 360k meals. They are viewed as the gold standard of efficiency in the city.",
             "Year 6: Apex climbs to 480k. Forward's ground-game is gaining exponential momentum, hitting 200k meals.",
-            "Year 7: THE CRASH. A routine IT migration discovers Apex's historical data breach. Regulators freeze their funding and fine them heavily. Apex flatlines.",
+            "Year 7: THE CRASH. Apex reaches a massive 530k meals before a routine IT migration discovers their historical data breach. Regulators freeze their funding and fine them heavily. Apex flatlines.",
             "Year 8: Fallout. The community completely loses trust in Apex. Meanwhile, Forward's robust partnerships push them to 380k meals.",
             "Year 9: Forward's exponential growth pushes them to 500k meals, rapidly closing in on the paralyzed Apex.",
             "Year 10: THE CROSSOVER. Forward skyrockets to 660k meals, officially overtaking Apex.",
             "Year 11: Forward demonstrates the compounding power of trust, hitting 860k meals. Apex is barely functioning.",
             "Year 12: Forward skyrockets past 1.1 million meals. Apex limps along, permanently hobbled by a shattered reputation."
         ];
+
+        // Custom Plugin to draw the Warning Icon at Year 7
+        const warningIconPlugin = {
+            id: 'warningIcon',
+            afterDatasetsDraw(chart, args, options) {
+                const ctx = chart.ctx;
+                const datasetIndex = 0; // Unethical dataset
+                const dataIndex = 7; // Year 7
+
+                // Only draw if we have reached or passed Year 7
+                if (chart.data.labels.length - 1 >= dataIndex) {
+                    const meta = chart.getDatasetMeta(datasetIndex);
+                    const point = meta.data[dataIndex];
+                    if (point) {
+                        ctx.save();
+                        ctx.font = '24px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        // Draw the warning emoji above the specific data point
+                        ctx.fillText('⚠️', point.x, point.y - 12);
+                        ctx.restore();
+                    }
+                }
+            }
+        };
 
         // Chart Setup
         const ctx = document.getElementById('impactChart').getContext('2d');
@@ -291,7 +316,8 @@
                         title: { display: true, text: 'Cumulative Meals Served' }
                     }
                 }
-            }
+            },
+            plugins: [warningIconPlugin]
         });
 
         // Interactive Logic
