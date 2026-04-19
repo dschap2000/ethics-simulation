@@ -34,7 +34,7 @@
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
         }
         .overlay h2 {
             font-size: 2.5em;
@@ -43,7 +43,7 @@
         }
         .overlay p {
             font-size: 1.3em;
-            max-width: 600px;
+            max-width: 650px;
             line-height: 1.6;
             margin-bottom: 30px;
         }
@@ -56,13 +56,49 @@
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-top: 10px;
         }
         .start-btn:hover { background-color: #2563eb; }
+
+        #intro-overlay {
+            background-color: #111827;
+        }
 
         #breach-overlay {
             display: none;
             opacity: 0;
-            background-color: rgba(0, 0, 0, 0.95);
+            background-color: rgba(17, 24, 39, 0.98);
+        }
+
+        /* Police Crash Overlay Styles */
+        #crash-overlay {
+            display: none;
+            opacity: 0;
+            animation: emergencyFlash 0.6s infinite alternate;
+        }
+        #crash-overlay h2 {
+            color: #ffffff;
+            font-size: 3em;
+            text-shadow: 2px 2px 10px #000;
+        }
+        .siren-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .siren {
+            font-size: 5em;
+            animation: spinSiren 1s linear infinite;
+        }
+        
+        @keyframes emergencyFlash {
+            from { background-color: rgba(185, 28, 28, 0.95); }
+            to { background-color: rgba(127, 29, 29, 0.95); }
+        }
+        @keyframes spinSiren {
+            0% { transform: rotateY(0deg); text-shadow: 0 0 30px #ef4444; }
+            50% { transform: rotateY(180deg); text-shadow: 0 0 50px #3b82f6; }
+            100% { transform: rotateY(360deg); text-shadow: 0 0 30px #ef4444; }
         }
 
         /* Dashboard Styles */
@@ -124,15 +160,27 @@
 
     <div id="intro-overlay" class="overlay">
         <h2>The Mission</h2>
-        <p>Madison, Wisconsin.<br><br>Two organizations are dedicated to serving hungry people in the community. Amidst hostile immigration crackdowns, the mission is urgent: serve as many undocumented and fearful families as possible to ensure no one goes hungry in the shadows.</p>
+        <p>Madison, Wisconsin.<br><br><strong>Forward Community Pantry</strong> and <strong>Apex Metro Relief</strong> are both dedicated to feeding the hungry. Amidst hostile immigration crackdowns, their mission is urgent: serve as many undocumented and fearful families as possible to ensure no one goes hungry in the shadows.</p>
         <p>But how they achieve this goal will define their legacy.</p>
-        <button class="start-btn" onclick="startSimulation()">Enter Simulation</button>
+        <button class="start-btn" onclick="dismissOverlay('intro-overlay')">Enter Simulation</button>
     </div>
 
     <div id="breach-overlay" class="overlay">
         <h2>YEAR TWO: THE SHORTCUT</h2>
         <p>Faced with intense pressure to hit internal targets, an Apex Metro Relief employee commits a severe ethical violation.</p>
         <p>They secretly breach the local school district's database, stealing the highly sensitive addresses of undocumented families to bypass the slow work of community outreach.</p>
+        <button class="start-btn" style="background-color: #ef4444;" onclick="dismissOverlay('breach-overlay')">Acknowledge</button>
+    </div>
+
+    <div id="crash-overlay" class="overlay">
+        <div class="siren-container">
+            <div class="siren">🚨</div>
+            <div class="siren">🚨</div>
+        </div>
+        <h2>SYSTEM FAILURE</h2>
+        <p>A routine IT migration at the school district has uncovered the unauthorized data query from 5 years ago!</p>
+        <p>State and federal regulators have descended on Apex Metro Relief. Their funding is immediately frozen. The community is terrified, and the resulting data-lockdown paralyzes the city's social services.</p>
+        <button class="start-btn" style="background-color: #111827; border: 2px solid #ef4444;" onclick="dismissOverlay('crash-overlay')">Face the Consequences</button>
     </div>
 
     <h1>The Compound Interest of Trust</h1>
@@ -157,8 +205,8 @@
             <div id="event-4" class="event-card event-success">
                 <strong>🤝 Year 4:</strong> Forward Community Pantry forms key local partnerships! Trust deepens.
             </div>
-            <div id="event-8" class="event-card event-danger">
-                <strong>🛑 Year 8:</strong> Audit discovers the breach! Regulators freeze Apex Metro Relief's funding.
+            <div id="event-7" class="event-card event-danger">
+                <strong>🛑 Year 7:</strong> Audit discovers the breach! Regulators freeze Apex Metro Relief's funding.
             </div>
             <div id="event-10" class="event-card event-success">
                 <strong>🏆 Year 10:</strong> Forward Community Pantry overtakes Apex Metro Relief!
@@ -167,18 +215,25 @@
     </div>
 
     <script>
-        // Cinematic Functions
-        function startSimulation() {
-            const intro = document.getElementById('intro-overlay');
-            intro.style.opacity = '0';
-            setTimeout(() => { intro.style.display = 'none'; }, 1000);
+        // Cinematic Overlay Control
+        let isPaused = false;
+        let hasSeenBreach = false;
+        let hasSeenCrash = false;
+
+        function dismissOverlay(overlayId) {
+            const overlay = document.getElementById(overlayId);
+            overlay.style.opacity = '0';
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                isPaused = false; // Re-enable slider movement
+            }, 500);
         }
 
         // Data Arrays 
         const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12'];
         
-        // Apex grows massively from 2 to 7 due to the breach, plateaus at 8
-        const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 600000, 620000, 630000, 635000, 638000, 640000];
+        // Apex grows massively from 2 to 6, crashes at 7
+        const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 500000, 510000, 515000, 518000, 520000, 521000];
         
         // Forward grows slowly but exponentially, crossing over at year 10
         const ethicalData = [0, 15000, 35000, 60000, 95000, 140000, 200000, 280000, 380000, 500000, 660000, 860000, 1100000];
@@ -191,12 +246,12 @@
             "Year 4: Apex's metrics are incredible. Forward hits 95k, but they successfully establish vital, localized trust networks with neighborhood leaders.",
             "Year 5: Apex reaches 360k meals. They are viewed as the gold standard of efficiency in the city.",
             "Year 6: Apex climbs to 480k. Forward's ground-game is gaining exponential momentum, hitting 200k meals.",
-            "Year 7: Peak Efficiency. Apex hits 600k meals. Forward reaches 280k, but their foundation is unshakeable.",
-            "Year 8: THE CRASH. A routine IT migration discovers Apex's historical data breach. Regulators freeze their funding and fine them heavily. Apex flatlines.",
-            "Year 9: Fallout. The community completely loses trust in Apex. Meanwhile, Forward's robust partnerships push them to 500k meals.",
-            "Year 10: THE CROSSOVER. Forward skyrockets to 660k meals, officially overtaking the paralyzed Apex.",
+            "Year 7: THE CRASH. A routine IT migration discovers Apex's historical data breach. Regulators freeze their funding and fine them heavily. Apex flatlines.",
+            "Year 8: Fallout. The community completely loses trust in Apex. Meanwhile, Forward's robust partnerships push them to 380k meals.",
+            "Year 9: Forward's exponential growth pushes them to 500k meals, rapidly closing in on the paralyzed Apex.",
+            "Year 10: THE CROSSOVER. Forward skyrockets to 660k meals, officially overtaking Apex.",
             "Year 11: Forward demonstrates the compounding power of trust, hitting 860k meals. Apex is barely functioning.",
-            "Year 12: Forward skyrockets past 1.1 million meals. Apex limps along at 640k, permanently hobbled by a shattered reputation."
+            "Year 12: Forward skyrockets past 1.1 million meals. Apex limps along, permanently hobbled by a shattered reputation."
         ];
 
         // Chart Setup
@@ -247,13 +302,11 @@
         // Visual Event Cards
         const event2 = document.getElementById('event-2');
         const event4 = document.getElementById('event-4');
-        const event8 = document.getElementById('event-8');
+        const event7 = document.getElementById('event-7');
         const event10 = document.getElementById('event-10');
 
-        let hasSeenBreach = false;
-        let isPaused = false;
-
         // Initial setup
+        isPaused = true; // Pause at intro
         narrativeBox.innerText = narratives[0];
 
         function updateDashboard(index) {
@@ -263,7 +316,7 @@
             // Toggle Event Cards
             event2.style.display = index >= 2 ? 'block' : 'none';
             event4.style.display = index >= 4 ? 'block' : 'none';
-            event8.style.display = index >= 8 ? 'block' : 'none';
+            event7.style.display = index >= 7 ? 'block' : 'none';
             event10.style.display = index >= 10 ? 'block' : 'none';
 
             // Update Chart
@@ -274,15 +327,17 @@
         }
 
         slider.addEventListener('input', function(e) {
-            // Prevent sliding if the dramatic pause is active
+            let currentYearIndex = parseInt(this.value);
+
+            // Prevent sliding past a cinematic lock
             if (isPaused) {
-                slider.value = 2;
+                if (!hasSeenBreach && currentYearIndex > 1) currentYearIndex = 1;
+                else if (hasSeenBreach && !hasSeenCrash && currentYearIndex > 6) currentYearIndex = 6;
+                slider.value = currentYearIndex;
                 return;
             }
 
-            let currentYearIndex = parseInt(this.value);
-
-            // Trigger the Year 2 Cinematic Interruption
+            // Trigger Year 2 Breach Pause
             if (currentYearIndex >= 2 && !hasSeenBreach) {
                 hasSeenBreach = true;
                 isPaused = true;
@@ -293,18 +348,22 @@
 
                 const breachOverlay = document.getElementById('breach-overlay');
                 breachOverlay.style.display = 'flex';
-                // slight delay to allow display:flex to apply before transitioning opacity
                 setTimeout(() => { breachOverlay.style.opacity = '1'; }, 50);
+                return;
+            }
 
-                // Hold black screen for 4.5 seconds, then fade out
-                setTimeout(() => {
-                    breachOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        breachOverlay.style.display = 'none';
-                        isPaused = false; // Re-enable the slider
-                    }, 1000);
-                }, 4500);
+            // Trigger Year 7 Crash Pause
+            if (currentYearIndex >= 7 && !hasSeenCrash) {
+                hasSeenCrash = true;
+                isPaused = true;
+                slider.value = 7; 
+                currentYearIndex = 7;
                 
+                updateDashboard(currentYearIndex);
+
+                const crashOverlay = document.getElementById('crash-overlay');
+                crashOverlay.style.display = 'flex';
+                setTimeout(() => { crashOverlay.style.opacity = '1'; }, 50);
                 return;
             }
 
