@@ -69,6 +69,12 @@
             opacity: 1; 
             background-color: #000000; 
         }
+        
+        /* Fix for Year 2 Part 1 Fade-in */
+        #breach-overlay-1 {
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
 
         /* Police Crash Overlay */
         #crash-overlay {
@@ -146,21 +152,21 @@
             font-weight: bold;
         }
         
-        /* Floating Swoop Animation Element */
+        /* Floating Swoop Modal Element */
         #floating-narrative {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             border: 2px solid #3b82f6;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            padding: 20px;
-            border-radius: 8px;
-            font-size: 1.3em;
-            font-weight: bold;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 1.2em;
             text-align: center;
             width: 80%;
-            z-index: 100;
-            pointer-events: none;
+            max-width: 550px;
+            z-index: 500;
             opacity: 0;
+            display: none;
             top: 40%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -175,6 +181,35 @@
             line-height: 1.5;
             min-height: 60px;
             transition: opacity 0.3s;
+        }
+
+        /* Narrative History Panel */
+        #history-panel {
+            background-color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+        }
+        #history-panel summary {
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #1f2937;
+            outline: none;
+        }
+        #history-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+        #history-list li {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            line-height: 1.4;
+        }
+        #history-list li:last-child {
+            border-bottom: none;
         }
 
         /* --- YEAR 8: DYNAMIC RESILIENCE ANCHOR --- */
@@ -201,11 +236,12 @@
         .res-box {
             position: absolute;
             bottom: 120px;
-            right: 0; /* Expands to the left from the line */
+            /* Anchored slightly to the right, expands fully to the left to prevent cutoff */
+            right: -20px; 
             width: 0;
             background: white;
             border: 3px solid #3b82f6;
-            border-radius: 8px 0 8px 8px;
+            border-radius: 8px 8px 0 8px; /* pointy corner at bottom right */
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             overflow: hidden;
             white-space: nowrap;
@@ -214,14 +250,14 @@
         .res-content {
             opacity: 0;
             padding: 20px;
-            width: 420px; 
+            width: 320px; /* Constrained width ensures it fits mobile screens */
             white-space: normal;
             animation: fadeInText 0.4s 1.2s forwards;
             color: #1f2937;
         }
         
         @keyframes shootUp { to { height: 120px; } }
-        @keyframes expandLeft { to { width: 420px; } }
+        @keyframes expandLeft { to { width: 320px; } }
         @keyframes fadeInText { to { opacity: 1; } }
         /* ------------------------------------------ */
         
@@ -259,7 +295,6 @@
             color: #9ca3af;
             margin-top: 40px;
             font-style: italic;
-            max-width: 700px;
             text-align: left;
         }
     </style>
@@ -324,7 +359,10 @@
     <p style="text-align: center;">Tracking cumulative meals served over 13 years.</p>
 
     <div class="dashboard">
-        <div id="floating-narrative"></div>
+        <div id="floating-narrative">
+            <div id="fn-text" style="margin-bottom: 20px;"></div>
+            <button id="fn-btn" class="start-btn" style="margin: 0; font-size: 1rem; padding: 10px 20px;">Read & Continue 📜&darr;</button>
+        </div>
 
         <div class="controls">
             <div class="year-display">Current Year: <span id="yearLabel">0</span></div>
@@ -347,13 +385,19 @@
                         <div style="font-size: 0.8em; color: #6b7280; font-style: italic; margin-top: 10px;">
                             Miller-Stevens et al. 2022, 1214 (citing Quad Innovation Partnership, 2020)
                         </div>
-                        <button class="start-btn" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 8px;" onclick="dismissResilience()">Proceed</button>
+                        <button id="res-btn" class="start-btn" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 8px;">Proceed</button>
                     </div>
                 </div>
             </div>
         </div>
         
         <div id="narrative"></div>
+        
+        <details id="history-panel">
+            <summary>📜 Narrative History (Click to Expand)</summary>
+            <ul id="history-list">
+                </ul>
+        </details>
         
         <div id="alerts-container">
             <div id="event-2" class="event-card event-danger">
@@ -389,117 +433,12 @@
                 
                 const voices = window.speechSynthesis.getVoices();
                 const femaleVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('samantha'));
-                if (femaleVoice) {
-                    msg.voice = femaleVoice;
-                }
+                if (femaleVoice) msg.voice = femaleVoice;
                 
                 window.speechSynthesis.speak(msg);
             }
         }
         window.speechSynthesis.getVoices();
-
-        // --- Swooping Animation Logic ---
-        let swoopTimeout1, swoopTimeout2, swoopTimeout3;
-
-        function triggerSwoop(text) {
-            const floater = document.getElementById('floating-narrative');
-            const target = document.getElementById('narrative');
-            
-            clearTimeout(swoopTimeout1);
-            clearTimeout(swoopTimeout2);
-            clearTimeout(swoopTimeout3);
-            
-            floater.style.transition = 'none';
-            floater.style.top = '40%';
-            floater.style.left = '50%';
-            floater.style.transform = 'translate(-50%, -50%) scale(1)';
-            floater.style.opacity = '0';
-            floater.innerText = text;
-            
-            target.style.opacity = '0.3';
-            target.innerText = text; 
-
-            swoopTimeout1 = setTimeout(() => {
-                floater.style.transition = 'opacity 0.4s ease-out';
-                floater.style.opacity = '1';
-            }, 50);
-
-            swoopTimeout2 = setTimeout(() => {
-                const targetRect = target.getBoundingClientRect();
-                const floaterRect = floater.getBoundingClientRect();
-                const deltaY = targetRect.top - floaterRect.top;
-                
-                floater.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-                floater.style.transform = `translate(-50%, calc(-50% + ${deltaY + 20}px)) scale(0.8)`;
-                floater.style.opacity = '0';
-                
-                swoopTimeout3 = setTimeout(() => {
-                    target.style.opacity = '1';
-                }, 500);
-            }, 2000); 
-        }
-
-        // --- Cinematic Overlay Control ---
-        let isPaused = false;
-        let hasSeenBreach = false;
-        let hasSeenCrash = false;
-        let hasSeenResilience = false;
-        let hasSeenDeath = false;
-
-        function dismissIntro() {
-            document.getElementById('intro-overlay').style.opacity = '0';
-            setTimeout(() => { 
-                document.getElementById('intro-overlay').style.display = 'none'; 
-                isPaused = false;
-                updateButtons();
-            }, 500);
-        }
-
-        function nextBreachOverlay(currentStep) {
-            document.getElementById(`breach-overlay-${currentStep}`).style.display = 'none';
-            document.getElementById(`breach-overlay-${currentStep + 1}`).style.display = 'flex';
-        }
-
-        function finishBreachOverlay() {
-            const overlay = document.getElementById('breach-overlay-3');
-            overlay.style.opacity = '0';
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-                isPaused = false; 
-                updateButtons();
-            }, 500);
-        }
-
-        function dismissCrash() {
-            const overlay = document.getElementById('crash-overlay');
-            overlay.style.opacity = '0';
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-                isPaused = false; 
-                updateButtons();
-            }, 500);
-        }
-
-        function dismissResilience() {
-            const anchor = document.getElementById('resilience-anchor');
-            anchor.style.opacity = '0';
-            setTimeout(() => {
-                anchor.style.display = 'none';
-                isPaused = false;
-                updateButtons();
-            }, 500);
-        }
-
-        function dismissDeath() {
-            const overlay = document.getElementById('death-overlay');
-            overlay.style.opacity = '0';
-            window.speechSynthesis.cancel(); 
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-                isPaused = false; 
-                updateButtons();
-            }, 500);
-        }
 
         // --- Data Arrays ---
         const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12', 'Year 13'];
@@ -523,7 +462,7 @@
             "Year 13: Forward secures a massive $60 million federal grant, allowing it to scale its operations by 150 percent. The ethical approach becomes the unquestioned gold standard."
         ];
 
-        // Custom Plugin: Warning Icon at Year 7 & Coffin Icon/Fade at Year 12
+        // --- Custom Plugin for Warning & Coffin Icons ---
         const annotationsPlugin = {
             id: 'annotations',
             afterDatasetsDraw(chart) {
@@ -540,7 +479,6 @@
                     const point7 = meta.data[7];
                     if (point7) ctx.fillText('⚠️', point7.x, point7.y - 12);
                 }
-
                 if (chart.data.labels.length - 1 >= 12) {
                     const point12 = meta.data[12];
                     if (point12) ctx.fillText('⚰️', point12.x, point12.y - 12);
@@ -549,7 +487,7 @@
             }
         };
 
-        // Chart Setup
+        // --- Chart Setup ---
         const ctx = document.getElementById('impactChart').getContext('2d');
         const impactChart = new Chart(ctx, {
             type: 'line',
@@ -586,20 +524,33 @@
                 scales: {
                     y: {
                         min: 0,
-                        max: 3000000, 
+                        max: 1200000, 
                         title: { display: true, text: 'Cumulative Meals Served' }
+                    }
+                },
+                // Interactivity: Click the Blue Dot at Year 8
+                onClick: (event, activeElements) => {
+                    if (activeElements.length > 0) {
+                        const el = activeElements[0];
+                        // Dataset 1 is Ethical (Blue), Index 8 is Year 8
+                        if (el.datasetIndex === 1 && el.index === 8) {
+                            if (!isPaused) {
+                                isPaused = true;
+                                updateButtons();
+                                showResilience(true); // true = isRetrigger
+                            }
+                        }
                     }
                 }
             },
             plugins: [annotationsPlugin]
         });
 
-        // Interactive Logic
+        // --- Control State & UI Variables ---
         const slider = document.getElementById('yearSlider');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const yearLabel = document.getElementById('yearLabel');
-        
         const eventCards = {
             2: document.getElementById('event-2'),
             4: document.getElementById('event-4'),
@@ -609,7 +560,12 @@
             13: document.getElementById('event-13')
         };
 
-        isPaused = true; 
+        let isPaused = true; 
+        let hasSeenBreach = false;
+        let hasSeenCrash = false;
+        let hasSeenResilience = false;
+        let hasSeenDeath = false;
+
         document.getElementById('narrative').innerText = narratives[0];
         updateButtons();
 
@@ -617,25 +573,162 @@
             const val = parseInt(slider.value);
             prevBtn.disabled = val === 0 || isPaused;
             nextBtn.disabled = val === 13 || isPaused;
+            slider.disabled = isPaused;
         }
 
-        function updateDashboard(index) {
+        // --- Narrative History Log ---
+        function updateHistory(index) {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            for(let i=0; i<=index; i++) {
+                const li = document.createElement('li');
+                // Bold the "Year X:" part dynamically
+                li.innerHTML = `<strong>Year ${i}:</strong> ${narratives[i].substring(narratives[i].indexOf(':') + 2)}`;
+                list.appendChild(li);
+            }
+        }
+
+        // --- Swooping Modal Logic (Requires Click) ---
+        function triggerSwoop(text, yearIndex) {
+            const floater = document.getElementById('floating-narrative');
+            const target = document.getElementById('narrative');
+            const btn = document.getElementById('fn-btn');
+            
+            // Reset floater to center
+            floater.style.transition = 'none';
+            floater.style.top = '40%';
+            floater.style.left = '50%';
+            floater.style.transform = 'translate(-50%, -50%) scale(1)';
+            floater.style.display = 'block';
+            void floater.offsetWidth; // Force reflow
+            floater.style.opacity = '1';
+            
+            document.getElementById('fn-text').innerText = text;
+            
+            // Dim background text
+            target.style.opacity = '0.3';
+            target.innerText = text; 
+
+            isPaused = true;
+            updateButtons();
+
+            // Wait for user to click
+            btn.onclick = () => {
+                const targetRect = target.getBoundingClientRect();
+                const floaterRect = floater.getBoundingClientRect();
+                const deltaY = targetRect.top - floaterRect.top;
+                
+                // Swoop Down
+                floater.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                floater.style.transform = `translate(-50%, calc(-50% + ${deltaY + 20}px)) scale(0.8)`;
+                floater.style.opacity = '0';
+                
+                setTimeout(() => {
+                    floater.style.display = 'none';
+                    target.style.opacity = '1';
+                    
+                    updateHistory(yearIndex);
+                    isPaused = false;
+                    updateButtons();
+                }, 600); 
+            };
+        }
+
+        // --- Core Update Function ---
+        function updateChartAndUI(index) {
             yearLabel.innerText = index;
-            triggerSwoop(narratives[index]);
 
             for (let year in eventCards) {
                 eventCards[year].style.display = index >= parseInt(year) ? 'block' : 'none';
+            }
+
+            // DYNAMIC Y-AXIS TRIUMPH AT YEAR 13
+            const targetMax = index === 13 ? 3000000 : 1200000;
+            if (impactChart.options.scales.y.max !== targetMax) {
+                impactChart.options.scales.y.max = targetMax;
             }
 
             impactChart.data.labels = labels.slice(0, index + 1);
             impactChart.data.datasets[0].data = unethicalData.slice(0, index + 1);
             impactChart.data.datasets[1].data = ethicalData.slice(0, index + 1);
             impactChart.update();
-            updateButtons();
         }
 
+        // --- Cinematic Controllers ---
+        function dismissIntro() {
+            document.getElementById('intro-overlay').style.opacity = '0';
+            setTimeout(() => { 
+                document.getElementById('intro-overlay').style.display = 'none'; 
+                triggerSwoop(narratives[0], 0);
+            }, 500);
+        }
+
+        function nextBreachOverlay(currentStep) {
+            document.getElementById(`breach-overlay-${currentStep}`).style.display = 'none';
+            document.getElementById(`breach-overlay-${currentStep + 1}`).style.display = 'flex';
+        }
+
+        function finishBreachOverlay() {
+            const overlay = document.getElementById('breach-overlay-3');
+            overlay.style.opacity = '0';
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                triggerSwoop(narratives[2], 2);
+            }, 500);
+        }
+
+        function dismissCrash() {
+            const overlay = document.getElementById('crash-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                triggerSwoop(narratives[7], 7);
+            }, 500);
+        }
+
+        function showResilience(isRetrigger = false) {
+            const meta = impactChart.getDatasetMeta(1); // Anchored to Ethical (Blue) line
+            const point = meta.data[8];
+            if (point) {
+                const anchor = document.getElementById('resilience-anchor');
+                anchor.style.left = point.x + 'px';
+                anchor.style.top = point.y + 'px';
+                anchor.style.display = 'block';
+                void anchor.offsetWidth; 
+                anchor.style.opacity = '1';
+
+                document.getElementById('res-btn').onclick = () => {
+                    anchor.style.opacity = '0';
+                    setTimeout(() => {
+                        anchor.style.display = 'none';
+                        if (!isRetrigger) {
+                            triggerSwoop(narratives[8], 8);
+                        } else {
+                            // If user just clicked the dot to review, just unlock UI
+                            isPaused = false;
+                            updateButtons();
+                        }
+                    }, 500);
+                };
+            }
+        }
+
+        function dismissDeath() {
+            const overlay = document.getElementById('death-overlay');
+            overlay.style.opacity = '0';
+            window.speechSynthesis.cancel(); 
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                triggerSwoop(narratives[12], 12);
+            }, 500);
+        }
+
+        // --- Main Timeline Router ---
         function handleTimeChange(newVal) {
-            if (isPaused) return;
+            if (isPaused) {
+                slider.value = parseInt(yearLabel.innerText); // Force slider back if locked
+                return;
+            }
 
             let currentYearIndex = parseInt(newVal);
 
@@ -644,11 +737,12 @@
                 hasSeenBreach = true;
                 isPaused = true;
                 slider.value = 2; 
-                currentYearIndex = 2;
-                updateDashboard(currentYearIndex);
+                updateChartAndUI(2);
+
                 const breachOverlay1 = document.getElementById('breach-overlay-1');
                 breachOverlay1.style.display = 'flex';
-                setTimeout(() => { breachOverlay1.style.opacity = '1'; }, 50);
+                void breachOverlay1.offsetWidth; // Force Reflow for Fade-in
+                breachOverlay1.style.opacity = '1';
                 updateButtons();
                 return;
             }
@@ -658,8 +752,8 @@
                 hasSeenCrash = true;
                 isPaused = true;
                 slider.value = 7; 
-                currentYearIndex = 7;
-                updateDashboard(currentYearIndex);
+                updateChartAndUI(7);
+
                 const crashOverlay = document.getElementById('crash-overlay');
                 crashOverlay.style.display = 'flex';
                 setTimeout(() => { crashOverlay.style.opacity = '1'; }, 50);
@@ -672,22 +766,10 @@
                 hasSeenResilience = true;
                 isPaused = true;
                 slider.value = 8;
-                currentYearIndex = 8;
-                updateDashboard(currentYearIndex);
+                updateChartAndUI(8);
                 
-                // Fetch the exact coordinates of Apex's Year 8 dot after chart draws
-                setTimeout(() => {
-                    const meta = impactChart.getDatasetMeta(0); // Apex dataset
-                    const point = meta.data[8];
-                    if (point) {
-                        const anchor = document.getElementById('resilience-anchor');
-                        anchor.style.left = point.x + 'px';
-                        anchor.style.top = point.y + 'px';
-                        anchor.style.display = 'block';
-                        setTimeout(() => { anchor.style.opacity = '1'; }, 50);
-                    }
-                }, 450); // wait for chart animation to finish drawing
-                
+                // Wait for chart animation to finish drawing before attaching the anchor
+                setTimeout(() => { showResilience(false); }, 450); 
                 updateButtons();
                 return;
             }
@@ -697,8 +779,8 @@
                 hasSeenDeath = true;
                 isPaused = true;
                 slider.value = 12; 
-                currentYearIndex = 12;
-                updateDashboard(currentYearIndex);
+                updateChartAndUI(12);
+
                 const deathOverlay = document.getElementById('death-overlay');
                 deathOverlay.style.display = 'flex';
                 setTimeout(() => { 
@@ -709,10 +791,13 @@
                 return;
             }
 
+            // Standard Path
             slider.value = currentYearIndex;
-            updateDashboard(currentYearIndex);
+            updateChartAndUI(currentYearIndex);
+            triggerSwoop(narratives[currentYearIndex], currentYearIndex);
         }
 
+        // --- Event Listeners ---
         slider.addEventListener('input', (e) => handleTimeChange(e.target.value));
 
         prevBtn.addEventListener('click', () => {
