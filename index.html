@@ -34,8 +34,8 @@
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
-            transition: opacity 0.5s ease-in-out;
         }
+        
         .overlay h2 {
             font-size: 2.5em;
             margin-bottom: 20px;
@@ -60,21 +60,33 @@
         }
         .start-btn:hover { background-color: #2563eb; }
 
+        /* Intro Overlay */
         #intro-overlay {
             background-color: #111827;
+            transition: opacity 0.5s ease-in-out;
         }
 
-        /* Breach Overlays (3 Parts) - Solid Black */
+        /* Breach Sequence (Black Backgrounds) */
         .breach-sequence {
             display: none;
-            opacity: 1; /* Keep fully opaque for instant transitions */
             background-color: #000000; 
         }
+        #breach-overlay-1 {
+            opacity: 0; /* Starts transparent so it can fade in */
+            transition: opacity 0.5s ease-in-out;
+        }
+        #breach-overlay-2, #breach-overlay-3 {
+            opacity: 1; /* Instant swaps after Part 1 */
+        }
+        #breach-overlay-3 {
+            transition: opacity 0.5s ease-in-out; /* Allows for fade out */
+        }
 
-        /* Police Crash Overlay Styles */
+        /* Police Crash Overlay */
         #crash-overlay {
             display: none;
             opacity: 0;
+            transition: opacity 0.5s ease-in-out;
             animation: emergencyFlash 0.6s infinite alternate;
         }
         #crash-overlay h2 {
@@ -91,6 +103,32 @@
             font-size: 5em;
             animation: spinSiren 1s linear infinite;
         }
+
+        /* Year 12 Death Overlay */
+        #death-overlay {
+            display: none;
+            opacity: 0;
+            background-color: #111827;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .swing-container {
+            transform-origin: top center;
+            animation: swing 2.5s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .cord {
+            width: 4px;
+            height: 80px;
+            background: #6b7280;
+        }
+        .phone {
+            font-size: 5em;
+            line-height: 1;
+            margin-top: -10px;
+        }
         
         @keyframes emergencyFlash {
             from { background-color: rgba(185, 28, 28, 0.95); }
@@ -100,6 +138,11 @@
             0% { transform: rotateY(0deg); text-shadow: 0 0 30px #ef4444; }
             50% { transform: rotateY(180deg); text-shadow: 0 0 50px #3b82f6; }
             100% { transform: rotateY(360deg); text-shadow: 0 0 30px #ef4444; }
+        }
+        @keyframes swing {
+            0% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            100% { transform: rotate(15deg); }
         }
 
         /* Dashboard Styles */
@@ -207,7 +250,7 @@
     <div id="breach-overlay-3" class="overlay breach-sequence">
         <h2>YEAR TWO: THE COST OF MANAGERIALISM</h2>
         <p>Robbie's decision is not an isolated moral failure, but a predictable symptom of a systemic organizational culture driven by efficiency and targets.</p>
-        <p>As researchers Lauren Willner and Sara M. Heller observe, "Managerialism emphasizes the 'bottom line', which is often based on metrics and outputs rather than the quality of services and community needs"[cite: 1].</p>
+        <p>As researchers Lauren Willner and Sara M. Heller observe, "Managerialism emphasizes the 'bottom line', which is often based on metrics and outputs rather than the quality of services and community needs".</p>
         <p>When human services are driven by rigid, market-based logic, ethical constraints are often the first casualty in the race to meet the quota.</p>
         
         <div class="citation">
@@ -225,7 +268,18 @@
         <h2>SYSTEM FAILURE</h2>
         <p>A routine IT migration at the school district has uncovered the unauthorized data query from 5 years ago!</p>
         <p>State and federal regulators have descended on Apex Metro Relief. Their funding is immediately frozen. The community is terrified, and the resulting data-lockdown paralyzes the city's social services.</p>
-        <button class="start-btn" style="background-color: #111827; border: 2px solid #ef4444;" onclick="dismissCrash()">Face the Consequences</button>
+        <button class="start-btn" style="background-color: #111827; border: 2px solid #ef4444;" onclick="dismissOverlay('crash-overlay')">Face the Consequences</button>
+    </div>
+
+    <div id="death-overlay" class="overlay">
+        <div class="swing-container">
+            <div class="cord"></div>
+            <div class="phone">☎️</div>
+        </div>
+        <h2>YEAR TWELVE: THE END</h2>
+        <p>Apex fails to file its Form 990.</p>
+        <p>Nobody can reach any of its listed employees. The line has been disconnected.</p>
+        <button class="start-btn" style="background-color: #374151; border: 2px solid #9ca3af;" onclick="dismissDeath()">Acknowledge</button>
     </div>
 
     <h1>The Compound Interest of Trust</h1>
@@ -270,10 +324,46 @@
     </div>
 
     <script>
-        // Cinematic Overlay Control
+        // --- Web Audio API for Disconnected Beeps ---
+        let audioCtx;
+        function playOminousBeeps() {
+            // Initialize audio context only on user interaction
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const gain = audioCtx.createGain();
+            gain.connect(audioCtx.destination);
+            gain.gain.value = 0.2; // Keep volume reasonable
+
+            // Play 3 sets of 3 short, dissonant beeps
+            for (let j = 0; j < 3; j++) {
+                let offset = j * 1.5; 
+                for (let i = 0; i < 3; i++) {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = 'square';
+                    osc.frequency.value = 480; 
+                    
+                    const osc2 = audioCtx.createOscillator();
+                    osc2.type = 'square';
+                    osc2.frequency.value = 620; 
+
+                    osc.connect(gain);
+                    osc2.connect(gain);
+
+                    let startTime = audioCtx.currentTime + offset + (i * 0.3);
+                    osc.start(startTime);
+                    osc2.start(startTime);
+                    osc.stop(startTime + 0.15);
+                    osc2.stop(startTime + 0.15);
+                }
+            }
+        }
+
+        // --- Cinematic Overlay Control ---
         let isPaused = false;
         let hasSeenBreach = false;
         let hasSeenCrash = false;
+        let hasSeenDeath = false;
 
         function dismissIntro() {
             const overlay = document.getElementById('intro-overlay');
@@ -281,7 +371,22 @@
             setTimeout(() => { 
                 overlay.style.display = 'none'; 
                 isPaused = false;
+                updateButtons();
             }, 500);
+        }
+
+        function dismissOverlay(overlayId) {
+            const overlay = document.getElementById(overlayId);
+            overlay.style.opacity = '0';
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                isPaused = false; 
+                updateButtons();
+            }, 500);
+        }
+
+        function dismissDeath() {
+            dismissOverlay('death-overlay');
         }
 
         // Instant swap for seamless reading of the Year 2 sequence
@@ -292,7 +397,6 @@
 
         function finishBreachOverlay() {
             const overlay = document.getElementById('breach-overlay-3');
-            overlay.style.transition = 'opacity 0.5s ease-in-out';
             overlay.style.opacity = '0';
             setTimeout(() => { 
                 overlay.style.display = 'none'; 
@@ -301,24 +405,14 @@
             }, 500);
         }
 
-        function dismissCrash() {
-            const overlay = document.getElementById('crash-overlay');
-            overlay.style.opacity = '0';
-            setTimeout(() => { 
-                overlay.style.display = 'none'; 
-                isPaused = false; 
-                updateButtons();
-            }, 500);
-        }
-
-        // Data Arrays (Expanded to 13 Years)
+        // --- Data Arrays ---
         const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12', 'Year 13'];
         
-        // Apex grows massively, crashes, limps, and dies at 12 (Year 13 is null so the line stops)
+        // Apex grows massively, crashes at 7, limps, and dies at 12 (Year 13 is null)
         const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 530000, 535000, 538000, 540000, 541000, 541000, null];
         
-        // Forward grows slowly but exponentially, gets massive grant at 13
-        const ethicalData = [0, 15000, 35000, 60000, 95000, 140000, 200000, 280000, 380000, 500000, 660000, 860000, 1100000, 2750000];
+        // Forward is severely stunted by the scandal in Years 7-8, recovers, and skyrockets
+        const ethicalData = [0, 15000, 35000, 60000, 95000, 140000, 200000, 210000, 220000, 350000, 550000, 860000, 1100000, 2750000];
         
         const narratives = [
             "Year 0: Initiation. Both organizations start at zero meals. The community need is high.",
@@ -328,12 +422,12 @@
             "Year 4: Apex's metrics are incredible. Forward hits 95k, but they successfully establish vital, localized trust networks with neighborhood leaders.",
             "Year 5: Apex reaches 360k meals. They are viewed as the gold standard of efficiency in the city.",
             "Year 6: Apex climbs to 480k. Forward's ground-game is gaining exponential momentum, hitting 200k meals.",
-            "Year 7: BUSTED! Apex reaches a massive 530k meals before a routine IT migration discovers their historical data breach. Robbie confesses to hacking the system, insisting he genuinely wanted to help. He gets fired anyway because intent is irrelevant; this was cheating and a massive violation of trust both philosophically and legally. Regulators freeze their funding and fine them heavily. Apex flatlines.",
-            "Year 8: Fallout. The community completely loses trust in Apex. Meanwhile, Forward's robust partnerships push them to 380k meals.",
-            "Year 9: Forward's exponential growth pushes them to 500k meals, rapidly closing in on the paralyzed Apex.",
-            "Year 10: THE CROSSOVER. Forward skyrockets to 660k meals, officially overtaking Apex.",
-            "Year 11: Forward demonstrates the compounding power of trust, hitting 860k meals. Apex files its last Form 990 (though nobody knows this at the time), barely functioning.",
-            "Year 12: Forward skyrockets past 1.1 million meals. Apex's offices are shuttered and no Form 990 is filed. The organization is dead. ⚰️",
+            "Year 7: BUSTED! Apex reaches a massive 530k meals before a routine IT migration discovers their historical data breach. Robbie confesses to hacking the system, insisting he genuinely wanted to help. He gets fired anyway because intent is irrelevant; this was cheating and a massive violation of trust both philosophically and legally. Regulators freeze their funding and fine them heavily. Apex flatlines. The citywide scandal severely stunts Forward's growth as well.",
+            "Year 8: Fallout. The community completely loses trust in Apex. The systemic shockwave temporarily stalls Forward's efforts, pushing them to only 220k meals.",
+            "Year 9: Forward begins recovering, relying on its deep trust networks to push to 350k meals while Apex remains paralyzed.",
+            "Year 10: THE CROSSOVER. Forward surges to 550k meals, officially overtaking Apex.",
+            "Year 11: Forward demonstrates the compounding power of trust, hitting 860k meals. Apex files what will be its last Form 990, barely functioning.",
+            "Year 12: Forward skyrockets past 1.1 million meals. Apex fails to file its Form 990. The offices are shuttered and the organization is dead. ⚰️",
             "Year 13: Forward secures a massive $60 million federal grant, allowing it to scale its operations by 150 percent. The ethical approach, built on compounding trust, becomes the unquestioned gold standard."
         ];
 
@@ -403,7 +497,7 @@
                 scales: {
                     y: {
                         min: 0,
-                        max: 3000000, // Expanded to fit the $60M grant growth
+                        max: 3000000, 
                         title: { display: true, text: 'Cumulative Meals Served' }
                     }
                 }
@@ -461,7 +555,7 @@
 
             let currentYearIndex = parseInt(newVal);
 
-            // Trigger Year 2 Breach Pause
+            // Trigger Year 2 Breach Pause (Fades in)
             if (currentYearIndex >= 2 && !hasSeenBreach) {
                 hasSeenBreach = true;
                 isPaused = true;
@@ -472,7 +566,8 @@
 
                 const breachOverlay1 = document.getElementById('breach-overlay-1');
                 breachOverlay1.style.display = 'flex';
-                breachOverlay1.style.opacity = '1';
+                // Slight delay to allow display:flex to apply before opacity transition
+                setTimeout(() => { breachOverlay1.style.opacity = '1'; }, 50);
                 updateButtons();
                 return;
             }
@@ -489,6 +584,25 @@
                 const crashOverlay = document.getElementById('crash-overlay');
                 crashOverlay.style.display = 'flex';
                 setTimeout(() => { crashOverlay.style.opacity = '1'; }, 50);
+                updateButtons();
+                return;
+            }
+
+            // Trigger Year 12 Death Pause
+            if (currentYearIndex >= 12 && !hasSeenDeath) {
+                hasSeenDeath = true;
+                isPaused = true;
+                slider.value = 12; 
+                currentYearIndex = 12;
+                
+                updateDashboard(currentYearIndex);
+
+                const deathOverlay = document.getElementById('death-overlay');
+                deathOverlay.style.display = 'flex';
+                setTimeout(() => { 
+                    deathOverlay.style.opacity = '1'; 
+                    playOminousBeeps(); // Trigger Audio
+                }, 50);
                 updateButtons();
                 return;
             }
