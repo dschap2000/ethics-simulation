@@ -518,6 +518,13 @@
                 title: "Organizational Resilience",
                 text: "While Apex crashed and burned from its unethical foundation, Forward Community Pantry absorbed the sector-wide shockwave. <br><br>Organizational resilience is <em>\"the ability of an organization to respond and adapt to incremental changes and sudden disruptions while also constantly anticipating and preparing for future challenges in order to sustainably meet [the organization's] mission.\"</em><sup>1</sup>",
                 citation: "[1] Miller-Stevens, Katrina, Zachariah Benevento-Zahner, Gabrielle L'Esperance, and Jennifer A. Taylor. 2022. \"Assessing Multidimensional Approaches to Measure Program Outcomes in Human Service Organizations.\" <em>Voluntas: International Journal of Voluntary and Nonprofit Organizations</em> 33: 1214."
+            },
+            9: {
+                dataset: 1, // Forward
+                theme: 'theme-blue',
+                title: "Relational \"Slack\" Resources",
+                text: "Apex's fatal flaw was optimizing for perfect efficiency. By eliminating relational \"slack\"—genuine, unquantifiable human interactions—to hit their quota, their operational system became entirely brittle.<br><br>Forward's slower, relationship-based approach appeared inefficient on a spreadsheet, but it successfully generated the <em>\"organizational slack\"</em><sup>1</sup> necessary to survive sector-wide disruptions. This relational slack acts as a vital buffer, providing the resources and flexibility required to adapt when highly optimized, formal systems inevitably collapse.",
+                citation: "[1] Meyer, Michael, and Johannes Leitner. 2018. \"Slack and Innovation in Nonprofit Organizations.\" <em>Nonprofit and Voluntary Sector Quarterly</em> 47 (1): 94-115."
             }
         };
 
@@ -626,7 +633,7 @@
         let hasSeenDeath = false;
         
         // Track academic popups
-        let seenConcepts = { 2: false, 3: false, 5: false, 6: false, 8: false };
+        let seenConcepts = { 2: false, 3: false, 5: false, 6: false, 8: false, 9: false };
 
         document.getElementById('narrative').innerText = narratives[0];
         updateButtons();
@@ -858,6 +865,7 @@
                 if (currentYearIndex < 6) seenConcepts[6] = false;
                 if (currentYearIndex < 7) hasSeenCrash = false;
                 if (currentYearIndex < 8) seenConcepts[8] = false;
+                if (currentYearIndex < 9) seenConcepts[9] = false;
                 if (currentYearIndex < 12) hasSeenDeath = false;
             }
 
@@ -907,7 +915,7 @@
                 return;
             }
 
-            // Dynamic Academic Concepts (Years 3, 5, 6, 8)
+            // Dynamic Academic Concepts (Years 2, 3, 5, 6, 8, 9)
             // Notice Year 2 is NOT auto-triggered here, to protect the cinematic
             if (academicConcepts[currentYearIndex] && !seenConcepts[currentYearIndex] && currentYearIndex !== 2) {
                 seenConcepts[currentYearIndex] = true;
