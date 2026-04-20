@@ -165,6 +165,8 @@
             text-align: center;
             width: 80%;
             max-width: 550px;
+            max-height: 60vh;
+            overflow-y: auto;
             z-index: 500;
             opacity: 0;
             display: none;
@@ -172,6 +174,12 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        /* Custom Scrollbar for Floating Narrative */
+        #floating-narrative::-webkit-scrollbar { width: 8px; }
+        #floating-narrative::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 4px; }
+        #floating-narrative::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+        #floating-narrative::-webkit-scrollbar-thumb:hover { background: #6b7280; }
 
         #narrative {
             padding: 15px;
@@ -230,9 +238,12 @@
             left: 0;
             transform: translateX(-50%);
         }
+        
         .concept-box {
             position: absolute;
             width: 420px; 
+            max-height: 60vh; /* Limits height to 60% of viewport */
+            overflow-y: auto; /* Enables scrolling if content overflows */
             background: white;
             border: 3px solid;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -241,6 +252,13 @@
             transform: scale(0);
             opacity: 0;
         }
+
+        /* Custom Scrollbar for Concept Box */
+        .concept-box::-webkit-scrollbar { width: 8px; }
+        .concept-box::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 4px; }
+        .concept-box::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+        .concept-box::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
         .concept-content {
             color: #1f2937;
         }
@@ -806,7 +824,13 @@
                     setTimeout(() => {
                         anchor.style.display = 'none';
                         if (!isRetrigger) {
-                            triggerSwoop(narratives[yearIndex], yearIndex);
+                            // Only trigger swoop if it wasn't automatically triggered at Year 2 during cinematic
+                            if (yearIndex !== 2) {
+                                triggerSwoop(narratives[yearIndex], yearIndex);
+                            } else {
+                                isPaused = false;
+                                updateButtons();
+                            }
                         } else {
                             isPaused = false;
                             updateButtons();
