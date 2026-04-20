@@ -421,7 +421,7 @@
         
         <div id="alerts-container">
             <div id="event-2" class="event-card event-danger">
-                <strong>🚨 Year 2:</strong> Apex Metro Relief silently breaches the school IT database.
+                <strong>🚨 Year 2:</strong> Apex silently breaches the school IT database. Meanwhile, Forward suffers a severe food shortage due to untracked inventory!
             </div>
             <div id="event-4" class="event-card event-success">
                 <strong>🤝 Year 4:</strong> Forward Community Pantry forms key local partnerships! Trust deepens.
@@ -463,13 +463,14 @@
         // --- Data Arrays ---
         const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12', 'Year 13'];
         const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 530000, 535000, 538000, 540000, 541000, 541000, null];
-        const ethicalData = [0, 15000, 35000, 60000, 95000, 140000, 200000, 210000, 220000, 350000, 550000, 860000, 1100000, 2750000];
+        // Note: Forward's Year 2 dips to 25,000 to reflect the new anti-metric shortage narrative
+        const ethicalData = [0, 15000, 25000, 60000, 95000, 140000, 200000, 210000, 220000, 350000, 550000, 860000, 1100000, 2750000];
         
         const narratives = [
             "Year 0: Initiation. Both organizations start at zero meals. The community need is high.",
             "Year 1: Early efforts begin. Apex Metro Relief hits 20k; Forward Community Pantry reaches 15k.",
-            "Year 2: Data Breach. Apex bypasses outreach entirely by stealing school data. Their numbers spike instantly to 70k. Forward relies on slow word-of-mouth.",
-            "Year 3: Apex scales with praiseworthy efficiency, hitting 150k meals. Forward is slowly building community trust.",
+            "Year 2: The Shortcut and The Shortfall. Apex bypasses outreach entirely by stealing school data, causing their numbers to spike to 70k. Meanwhile, Forward's extreme resistance to formal tracking backfires; a failure to measure inventory burn rate leads to a severe food shortage, stalling their growth at 25k.",
+            "Year 3: Apex scales with praiseworthy efficiency, hitting 150k meals. Forward recovers from its shortage and slowly builds community trust.",
             "Year 4: Apex's metrics are incredible. Forward hits 95k, but they successfully establish vital, localized trust networks with neighborhood leaders.",
             "Year 5: Apex reaches 360k meals. They are viewed as the gold standard of efficiency in the city.",
             "Year 6: Apex climbs to 480k. Forward's ground-game is gaining exponential momentum, hitting 200k meals.",
@@ -485,53 +486,66 @@
         // --- Academic Concepts Dictionary ---
         const academicConcepts = {
             2: {
-                dataset: 0, // Apex
-                theme: 'theme-red',
-                title: "The Illusion of Objectivity & HPWS",
-                text: "When Serena issued her 50,000-meal ultimatum and threatened performance improvement plans (PIPs), she was hiding behind the universally perceived objectivity of numbers to justify her decision in a way that she can present as a natural, logical, and unbiased strategic shift. Managers frequently rely on numbers to make ruthless decisions look like logical <em>\"answer[s] to a moral demand for impartiality and fairness\"</em><sup>1</sup>. The 50,000 quota removes Serena's need to exercise human judgment and <em>\"lends authority\"</em><sup>1</sup> to middle managers by enabling them to <em>\"crush, demean, and devalue\"</em><sup>2</sup> anyone who fails to meet a supposedly neutral demand. The numbers suddenly become an immoderate power that decides who gets fired, completely insulating leadership from the impending ethical collapse of the organization. Paradoxically, the removal of power by the numbers from leadership boomerangs to elevate power in the managers who enforce said numbers. The constant ricochet of power among high-ranking leadership, middle management, and the implicit objectivity of numbers shatters the efficiency gains of a high performance work system by all but demanding the removal of ethics from organizational culture.<br><br>Deploying a High-Performance Work System (HPWS) in this manner creates a dangerous paradox. The intense performance demands of an HPWS force employees into a state of resource scarcity, triggering a defensive <em>\"bottom-line mentality\"</em><sup>3</sup> response. The HPWS shatters its own efficiency gains by systematically crowding out ethics; unethical shortcuts cease to be isolated moral failures and instead become routine survival tactics to avoid the penalties of underperformance.",
-                citation: "<div style='margin-bottom: 8px;'>[1] Porter, Theodore M. <em>Trust in Numbers: The Pursuit of Objectivity in Science and Public Life</em>. NED-New edition. Princeton University Press, 2020. https://doi-org.ezproxy.library.wisc.edu/10.2307/j.ctvxcrz2b.</div><div style='margin-bottom: 8px;'>[2] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 49.</div><div>[3] Wang, Jigan, Qing Jia, Tianfeng Dong, Xiaochan Yang, and Haodong Jiang. 2025. \"Ethical Dilemmas in Performance-Oriented Management: A Dual-Path Systems Model.\" <em>Systems</em> 13 (10): 900, 5.</div>"
+                0: { // Apex Dataset
+                    theme: 'theme-red',
+                    title: "The Illusion of Objectivity & HPWS",
+                    text: "When Serena issued her 50,000-meal ultimatum and threatened performance improvement plans (PIPs), she was hiding behind the universally perceived objectivity of numbers to justify her decision in a way that she can present as a natural, logical, and unbiased strategic shift. Managers frequently rely on numbers to make ruthless decisions look like logical <em>\"answer[s] to a moral demand for impartiality and fairness\"</em><sup>1</sup>. The 50,000 quota removes Serena's need to exercise human judgment and <em>\"lends authority\"</em><sup>1</sup> to middle managers by enabling them to <em>\"crush, demean, and devalue\"</em><sup>2</sup> anyone who fails to meet a supposedly neutral demand. The numbers suddenly become an immoderate power that decides who gets fired, completely insulating leadership from the impending ethical collapse of the organization. Paradoxically, the removal of power by the numbers from leadership boomerangs to elevate power in the managers who enforce said numbers. The constant ricochet of power among high-ranking leadership, middle management, and the implicit objectivity of numbers shatters the efficiency gains of a high performance work system by all but demanding the removal of ethics from organizational culture.<br><br>Deploying a High-Performance Work System (HPWS) in this manner creates a dangerous paradox. The intense performance demands of an HPWS force employees into a state of resource scarcity, triggering a defensive <em>\"bottom-line mentality\"</em><sup>3</sup> response. The HPWS shatters its own efficiency gains by systematically crowding out ethics; unethical shortcuts cease to be isolated moral failures and instead become routine survival tactics to avoid the penalties of underperformance.",
+                    citation: "<div style='margin-bottom: 8px;'>[1] Porter, Theodore M. <em>Trust in Numbers: The Pursuit of Objectivity in Science and Public Life</em>. NED-New edition. Princeton University Press, 2020. https://doi-org.ezproxy.library.wisc.edu/10.2307/j.ctvxcrz2b.</div><div style='margin-bottom: 8px;'>[2] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 49.</div><div>[3] Wang, Jigan, Qing Jia, Tianfeng Dong, Xiaochan Yang, and Haodong Jiang. 2025. \"Ethical Dilemmas in Performance-Oriented Management: A Dual-Path Systems Model.\" <em>Systems</em> 13 (10): 900, 5.</div>"
+                },
+                1: { // Forward Dataset
+                    theme: 'theme-blue',
+                    title: "Accountability Myopia",
+                    text: "Forward Community Pantry's leadership is so resistant to the corporate managerialism of Apex that they reject formal metrics almost entirely. However, rejecting data creates its own operational blindness. Because Forward failed to track a basic logistical metric—inventory burn rate against culturally specific dietary needs—they suffer a severe food shortage in Year 2, turning away dozens of vulnerable families.<br><br>While over-quantification leads to dubious signaling, rejecting data entirely creates <em>\"accountability myopia.\"</em><sup>1</sup> As Ebrahim and Rangan argue, organizations must align their measurement systems with their operational realities; failing to track foundational logistical data actively harms the populations the nonprofit exists to serve.",
+                    citation: "[1] Ebrahim, Alnoor, and V. Kasturi Rangan. 2014. \"What Impact? A Framework for Measuring the Scale and Scope of Social Performance.\" <em>California Management Review</em> 56 (1): 118-141."
+                }
             },
             3: {
-                dataset: 0, // Apex
-                theme: 'theme-red',
-                title: "Goodhart's Law",
-                text: "The moment Apex made the 50,000 meals an explicit target tied to employee performance (PIPs), the metric stopped measuring actual community impact. <br><br>Measures fail when they assume signals are <em>\"honest, reliable, static, or interpreted accurately.\"</em><sup>1</sup> Over time, the metric becomes completely <em>\"decoupled... from the organizational activities they mean to capture and evaluate.\"</em><sup>1</sup>",
-                citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 3."
+                0: {
+                    theme: 'theme-red',
+                    title: "Goodhart's Law",
+                    text: "The moment Apex made the 50,000 meals an explicit target tied to employee performance (PIPs), the metric stopped measuring actual community impact. <br><br>Measures fail when they assume signals are <em>\"honest, reliable, static, or interpreted accurately.\"</em><sup>1</sup> Over time, the metric becomes completely <em>\"decoupled... from the organizational activities they mean to capture and evaluate.\"</em><sup>1</sup>",
+                    citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 3."
+                }
             },
             4: {
-                dataset: 1, // Forward
-                theme: 'theme-blue',
-                title: "Community Reciprocity & Invisible Work",
-                text: "Forward Community Pantry's CEO Alex deliberately diverts time and resources away from maximizing Forward's \"meals served\" metric to partner with a local legal clinic. In a managerialist system, this action appears highly inefficient because it does not directly boost the primary output measure. Not surprisingly, Apex does not pursue connections with other nonprofits in the community at this time.<br><br>The difference in growth strategy between Forward and Apex confirms that <em>\"measurement draws attention to certain things... whilst pulling our gaze away from other aspects of the social and the personal.\"</em><sup>1</sup> By focusing on the unquantifiable safety and legal wellbeing of their beneficiaries rather than raw volume, Forward is engaging in <em>\"community reciprocity.\"</em><sup>2</sup> It is building a multidimensional safety net that prioritizes the actual needs of the vulnerable population in a hostile immigration environment over the illusion of acontextual efficiency. In business speak, Forward is diversifying its assets while Apex is over-leveraging a single, fragile metric.",
-                citation: "<div style='margin-bottom: 8px;'>[1] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 60.</div><div>[2] Witmer, Hope, and Marcela Sarmiento Mellinger. 2016. \"Organizational Resilience: Nonprofit Organizations' Response to Change.\" <em>Work</em> 54: 255-265.</div>"
+                1: {
+                    theme: 'theme-blue',
+                    title: "Community Reciprocity & Invisible Work",
+                    text: "Forward Community Pantry's CEO Alex deliberately diverts time and resources away from maximizing Forward's \"meals served\" metric to partner with a local legal clinic. In a managerialist system, this action appears highly inefficient because it does not directly boost the primary output measure. Not surprisingly, Apex does not pursue connections with other nonprofits in the community at this time.<br><br>The difference in growth strategy between Forward and Apex confirms that <em>\"measurement draws attention to certain things... whilst pulling our gaze away from other aspects of the social and the personal.\"</em><sup>1</sup> By focusing on the unquantifiable safety and legal wellbeing of their beneficiaries rather than raw volume, Forward is engaging in <em>\"community reciprocity.\"</em><sup>2</sup> It is building a multidimensional safety net that prioritizes the actual needs of the vulnerable population in a hostile immigration environment over the illusion of acontextual efficiency. In business speak, Forward is diversifying its assets while Apex is over-leveraging a single, fragile metric.",
+                    citation: "<div style='margin-bottom: 8px;'>[1] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 60.</div><div>[2] Witmer, Hope, and Marcela Sarmiento Mellinger. 2016. \"Organizational Resilience: Nonprofit Organizations' Response to Change.\" <em>Work</em> 54: 255-265.</div>"
+                }
             },
             5: {
-                dataset: 0, // Apex
-                theme: 'theme-red',
-                title: "The Cat-and-Mouse Game",
-                text: "While the city views Apex as a massive success, internally, leadership and staff are playing a dangerous game for <em>\"control over meaning.\"</em><sup>1</sup> <br><br>This dynamic occurs because organizations seek <em>\"an accurate and meaningful reflection of activity,\"</em><sup>1</sup> while workers adapt by <em>\"shaping the communication of activity in ways that meets situated goals.\"</em><sup>1</sup>",
-                citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 9."
+                0: {
+                    theme: 'theme-red',
+                    title: "The Cat-and-Mouse Game",
+                    text: "While the city views Apex as a massive success, internally, leadership and staff are playing a dangerous game for <em>\"control over meaning.\"</em><sup>1</sup> <br><br>This dynamic occurs because organizations seek <em>\"an accurate and meaningful reflection of activity,\"</em><sup>1</sup> while workers adapt by <em>\"shaping the communication of activity in ways that meets situated goals.\"</em><sup>1</sup>",
+                    citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 9."
+                }
             },
             6: {
-                dataset: 0, // Apex
-                theme: 'theme-red',
-                title: "Dubious Signaling",
-                text: "Apex's massive growth is a dubious signal. Faced with extreme pressure, workers gamed the system to achieve genuine but profoundly dishonest metrics. Specifically, Robbie's technology hack <em>\"decoupled\"</em><sup>1</sup> the organization's data tracking initiatives from its broad mission of supporting the most vulnerable members of its community.<br><br>Robbie admittedly did not decouple the data from Apex's primary service, but as a community food pantry, Apex is accountable to a public that expects transparency and ethical behavior. Honesty only at the point of service delivery (physically distributing meals to families) following a dishonest process is dubious signaling because Robbie <em>\"engage[d] in behaviors with the goal of producing... questionable data.\"</em><sup>1</sup>",
-                citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 3."
+                0: {
+                    theme: 'theme-red',
+                    title: "Dubious Signaling",
+                    text: "Apex's massive growth is a dubious signal. Faced with extreme pressure, workers gamed the system to achieve genuine but profoundly dishonest metrics. Specifically, Robbie's technology hack <em>\"decoupled\"</em><sup>1</sup> the organization's data tracking initiatives from its broad mission of supporting the most vulnerable members of its community.<br><br>Robbie admittedly did not decouple the data from Apex's primary service, but as a community food pantry, Apex is accountable to a public that expects transparency and ethical behavior. Honesty only at the point of service delivery (physically distributing meals to families) following a dishonest process is dubious signaling because Robbie <em>\"engage[d] in behaviors with the goal of producing... questionable data.\"</em><sup>1</sup>",
+                    citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 3."
+                }
             },
             8: {
-                dataset: 1, // Forward
-                theme: 'theme-blue',
-                title: "Organizational Resilience",
-                text: "Apex's fragile foundation and metric-gaming has now completely destabilized and practically paralyzed its operations, but Forward Community Pantry's diversified community assets have enabled it to absorb the sector-wide shockwave. The legal clinic has maintained communications with program beneficiaries to ensure continuity of service from both the clinic and Forward. Families who have relied on Forward's services feel protected because the interorganizational collaboration has produced an impervious social safety net.<br><br>Organizational resilience is <em>\"the ability of an organization to respond and adapt to incremental changes and sudden disruptions while also constantly anticipating and preparing for future challenges in order to sustainably meet [the organization's] mission.\"</em><sup>1</sup>",
-                citation: "[1] Miller-Stevens, Katrina, Zachariah Benevento-Zahner, Gabrielle L'Esperance, and Jennifer A. Taylor. 2022. \"Assessing Multidimensional Approaches to Measure Program Outcomes in Human Service Organizations.\" <em>Voluntas: International Journal of Voluntary and Nonprofit Organizations</em> 33: 1214."
+                1: {
+                    theme: 'theme-blue',
+                    title: "Organizational Resilience",
+                    text: "Apex's fragile foundation and metric-gaming has now completely destabilized and practically paralyzed its operations, but Forward Community Pantry's diversified community assets have enabled it to absorb the sector-wide shockwave. The legal clinic has maintained communications with program beneficiaries to ensure continuity of service from both the clinic and Forward. Families who have relied on Forward's services feel protected because the interorganizational collaboration has produced an impervious social safety net.<br><br>Organizational resilience is <em>\"the ability of an organization to respond and adapt to incremental changes and sudden disruptions while also constantly anticipating and preparing for future challenges in order to sustainably meet [the organization's] mission.\"</em><sup>1</sup>",
+                    citation: "[1] Miller-Stevens, Katrina, Zachariah Benevento-Zahner, Gabrielle L'Esperance, and Jennifer A. Taylor. 2022. \"Assessing Multidimensional Approaches to Measure Program Outcomes in Human Service Organizations.\" <em>Voluntas: International Journal of Voluntary and Nonprofit Organizations</em> 33: 1214."
+                }
             },
             9: {
-                dataset: 1, // Forward
-                theme: 'theme-blue',
-                title: "Relational Slack Resources",
-                text: "Non-profits need relational slack to ensure a communitywide safety net to adapt to environmental changes. Apex's fatal flaw was optimizing for perfect business efficiency without investing in long-term, interorganizational connections. By eliminating relational slack to hit their quota, their operational system developed without stability. An unexpected accusation about a technological oversight from 5 years earlier left Apex completely vulnerable to a punitive legal system with no outside aid, reputation, or social capital to survive the scandal.<br><br>Forward's slower, relationship-based approach appeared inefficient on a spreadsheet, but it successfully generated the <em>\"organizational slack\"</em><sup>1</sup> necessary to survive sector-wide disruptions. This relational slack acts as a vital buffer, providing the resources and flexibility required to adapt when externally-controlled systems collapse.",
-                citation: "[1] Witmer, Hope, and Marcela Sarmiento Mellinger. 2016. \"Organizational Resilience: Nonprofit Organizations' Response to Change.\" <em>Work</em> 54: 255-265. https://doi.org/10.3233/WOR-162303."
+                1: {
+                    theme: 'theme-blue',
+                    title: "Relational Slack Resources",
+                    text: "Non-profits need relational slack to ensure a communitywide safety net to adapt to environmental changes. Apex's fatal flaw was optimizing for perfect business efficiency without investing in long-term, interorganizational connections. By eliminating relational slack to hit their quota, their operational system developed without stability. An unexpected accusation about a technological oversight from 5 years earlier left Apex completely vulnerable to a punitive legal system with no outside aid, reputation, or social capital to survive the scandal.<br><br>Forward's slower, relationship-based approach appeared inefficient on a spreadsheet, but it successfully generated the <em>\"organizational slack\"</em><sup>1</sup> necessary to survive sector-wide disruptions. This relational slack acts as a vital buffer, providing the resources and flexibility required to adapt when externally-controlled systems collapse.",
+                    citation: "[1] Witmer, Hope, and Marcela Sarmiento Mellinger. 2016. \"Organizational Resilience: Nonprofit Organizations' Response to Change.\" <em>Work</em> 54: 255-265. https://doi.org/10.3233/WOR-162303."
+                }
             }
         };
 
@@ -605,13 +619,13 @@
                 onClick: (event, activeElements) => {
                     if (activeElements.length > 0) {
                         const el = activeElements[0];
-                        const conceptInfo = academicConcepts[el.index];
+                        const yearConcepts = academicConcepts[el.index];
                         // Ensure they clicked the correct dataset point for that year
-                        if (conceptInfo && el.datasetIndex === conceptInfo.dataset) {
+                        if (yearConcepts && yearConcepts[el.datasetIndex]) {
                             if (!isPaused) {
                                 isPaused = true;
                                 updateButtons();
-                                showAcademicConcept(el.index, true); 
+                                showAcademicConcept(el.index, el.datasetIndex, true); 
                             }
                         }
                     }
@@ -745,7 +759,7 @@
             setTimeout(() => { 
                 overlay.style.display = 'none'; 
                 seenConcepts[2] = true;
-                showAcademicConcept(2, false);
+                showAcademicConcept(2, 0, false); // Triggers Apex's concept
             }, 500);
         }
 
@@ -769,9 +783,9 @@
         }
 
         // --- Academic Concept Engine ---
-        function showAcademicConcept(yearIndex, isRetrigger = false) {
-            const conceptInfo = academicConcepts[yearIndex];
-            const meta = impactChart.getDatasetMeta(conceptInfo.dataset);
+        function showAcademicConcept(yearIndex, datasetIndex, isRetrigger = false) {
+            const conceptInfo = academicConcepts[yearIndex][datasetIndex];
+            const meta = impactChart.getDatasetMeta(datasetIndex);
             const point = meta.data[yearIndex];
 
             if (point) {
@@ -931,7 +945,9 @@
                 slider.value = currentYearIndex;
                 updateChartAndUI(currentYearIndex);
                 
-                setTimeout(() => { showAcademicConcept(currentYearIndex, false); }, 450); 
+                // Determine which dataset to auto-show based on availability (defaults to Apex if both exist, otherwise Forward)
+                let defaultDataset = academicConcepts[currentYearIndex][0] ? 0 : 1;
+                setTimeout(() => { showAcademicConcept(currentYearIndex, defaultDataset, false); }, 450); 
                 updateButtons();
                 return;
             }
