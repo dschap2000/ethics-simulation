@@ -227,17 +227,14 @@
             width: 3px;
             height: 0;
             position: absolute;
-            bottom: 0;
             left: 0;
             transform: translateX(-50%);
         }
         .concept-box {
             position: absolute;
-            bottom: 120px;
             width: 380px; 
             background: white;
             border: 3px solid;
-            border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             box-sizing: border-box;
             padding: 25px;
@@ -259,11 +256,13 @@
         .theme-red h3 { color: #ef4444; }
         .theme-red .start-btn { background-color: #ef4444; }
         
-        /* Animation Triggers */
-        #concept-anchor.animate .concept-line { animation: shootUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        /* Dynamic Animation Triggers */
+        #concept-anchor.animate .concept-line.shoot-up { bottom: 0; top: auto; animation: shootUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        #concept-anchor.animate .concept-line.shoot-down { top: 0; bottom: auto; animation: shootDown 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         #concept-anchor.animate .concept-box { animation: popOut 0.5s 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
-        @keyframes shootUp { to { height: 120px; } }
+        @keyframes shootUp { to { height: 40px; } }
+        @keyframes shootDown { to { height: 40px; } }
         @keyframes popOut { to { transform: scale(1); opacity: 1; } }
         /* ------------------------------------------ */
         
@@ -383,7 +382,7 @@
             <canvas id="impactChart" height="200"></canvas>
             
             <div id="concept-anchor">
-                <div class="concept-line"></div>
+                <div id="concept-line" class="concept-line"></div>
                 <div class="concept-box" id="concept-box">
                     <div class="concept-content">
                         <h3 id="concept-title" style="margin-top: 0;"></h3>
@@ -739,29 +738,51 @@
             if (point) {
                 const anchor = document.getElementById('concept-anchor');
                 const box = document.getElementById('concept-box');
+                const line = document.getElementById('concept-line');
                 
                 anchor.className = conceptInfo.theme;
+                line.className = 'concept-line'; // Reset classes
                 
                 document.getElementById('concept-title').innerHTML = conceptInfo.title;
                 document.getElementById('concept-text').innerHTML = conceptInfo.text;
                 document.getElementById('concept-citation').innerHTML = conceptInfo.citation;
 
-                // Smart Positioning logic to prevent cutoff
+                // Smart Line Direction: If point is high (Years 5 and 6), shoot down to prevent cutoff
+                if (yearIndex === 5 || yearIndex === 6) {
+                    line.classList.add('shoot-down');
+                    box.style.bottom = 'auto';
+                    box.style.top = '40px';
+                } else {
+                    line.classList.add('shoot-up');
+                    box.style.top = 'auto';
+                    box.style.bottom = '40px';
+                }
+
+                // Smart Box Orientation: Avoid left/right screen edges
                 if (yearIndex >= 7) {
                     box.style.left = 'auto';
                     box.style.right = '-20px';
                     box.style.transformOrigin = 'bottom right';
                     box.style.marginLeft = '0';
+                    box.style.borderRadius = '8px 8px 0 8px';
+                } else if (yearIndex === 6) {
+                    box.style.left = 'auto';
+                    box.style.right = '-20px';
+                    box.style.transformOrigin = 'top right';
+                    box.style.marginLeft = '0';
+                    box.style.borderRadius = '8px 0 8px 8px';
                 } else if (yearIndex <= 3) {
                     box.style.right = 'auto';
                     box.style.left = '-20px';
                     box.style.transformOrigin = 'bottom left';
                     box.style.marginLeft = '0';
+                    box.style.borderRadius = '0 8px 8px 8px';
                 } else {
                     box.style.right = 'auto';
                     box.style.left = '50%';
-                    box.style.transformOrigin = 'bottom center';
+                    box.style.transformOrigin = 'top center';
                     box.style.marginLeft = '-190px'; // Half of 380px width
+                    box.style.borderRadius = '8px';
                 }
 
                 anchor.style.left = point.x + 'px';
