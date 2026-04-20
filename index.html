@@ -467,11 +467,18 @@
 
         // --- Academic Concepts Dictionary ---
         const academicConcepts = {
+            2: {
+                dataset: 0, // Apex
+                theme: 'theme-red',
+                title: "The Illusion of Objectivity & HPWS",
+                text: "When Serena issued her 50,000-meal ultimatum, she hid behind the \"objectivity\" of numbers to present a ruthless decision as a neutral, unbiased strategic shift. Managers frequently rely on quantification to provide an <em>\"answer to a moral demand for impartiality and fairness.\"</em> The quota removes the need for human judgment and instead <em>\"lends authority\"</em> to those who enforce it.<br><br>However, deploying a High-Performance Work System (HPWS) creates a dangerous paradox. The intense performance demands of an HPWS force employees into a state of resource scarcity, triggering a defensive <em>\"bottom-line mentality.\"</em> The system systematically crowds out ethics; unethical shortcuts cease to be isolated moral failures and instead become predictable, rational survival tactics to avoid the penalties of underperformance.",
+                citation: "Beer 2016, 49; Wang et al. 2025, 5"
+            },
             3: {
                 dataset: 0, // Apex
                 theme: 'theme-red',
                 title: "Goodhart's Law",
-                text: "The moment Apex made the 50,000 meals an explicit target tied to employee performance (PIPs), the metric stopped measuring actual community impact. <br><br>As Treem et al. argue, measures fail when they assume signals are <em>\"honest, reliable, static, or interpreted accurately.\"</em> Over time, the metric becomes completely <em>\"decoupled... from the organizational activities they mean to capture and evaluate.\"</em>",
+                text: "The moment Apex made the 50,000 meals an explicit target tied to employee performance (PIPs), the metric stopped measuring actual community impact. <br><br>Measures fail when they assume signals are <em>\"honest, reliable, static, or interpreted accurately.\"</em> Over time, the metric becomes completely <em>\"decoupled... from the organizational activities they mean to capture and evaluate.\"</em>",
                 citation: "Treem et al. 2023, 3"
             },
             5: {
@@ -799,7 +806,13 @@
                     setTimeout(() => {
                         anchor.style.display = 'none';
                         if (!isRetrigger) {
-                            triggerSwoop(narratives[yearIndex], yearIndex);
+                            // Only trigger swoop if it wasn't automatically triggered at Year 2 during cinematic
+                            if (yearIndex !== 2) {
+                                triggerSwoop(narratives[yearIndex], yearIndex);
+                            } else {
+                                isPaused = false;
+                                updateButtons();
+                            }
                         } else {
                             isPaused = false;
                             updateButtons();
@@ -877,7 +890,8 @@
             }
 
             // Dynamic Academic Concepts (Years 3, 5, 6, 8)
-            if (academicConcepts[currentYearIndex] && !seenConcepts[currentYearIndex]) {
+            // Notice Year 2 is NOT auto-triggered here, to protect the cinematic
+            if (academicConcepts[currentYearIndex] && !seenConcepts[currentYearIndex] && currentYearIndex !== 2) {
                 seenConcepts[currentYearIndex] = true;
                 isPaused = true;
                 slider.value = currentYearIndex;
