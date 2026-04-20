@@ -851,17 +851,17 @@
                     anchor.style.opacity = '0';
                     setTimeout(() => {
                         anchor.style.display = 'none';
-                        if (!isRetrigger) {
-                            // Only trigger swoop if it wasn't automatically triggered at Year 2 during cinematic
-                            if (yearIndex !== 2) {
+                        
+                        // Smart-Chaining for Year 2: Move from Apex (0) to Forward (1) automatically
+                        if (yearIndex === 2 && datasetIndex === 0 && !isRetrigger) {
+                            showAcademicConcept(2, 1, false);
+                        } else {
+                            if (!isRetrigger) {
                                 triggerSwoop(narratives[yearIndex], yearIndex);
                             } else {
                                 isPaused = false;
                                 updateButtons();
                             }
-                        } else {
-                            isPaused = false;
-                            updateButtons();
                         }
                     }, 500);
                 };
