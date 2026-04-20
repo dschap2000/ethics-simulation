@@ -233,6 +233,7 @@
             transform: translateX(-50%);
             animation: shootUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
+        /* Fixed width and scale animation prevents text from wrapping awkwardly */
         .res-box {
             position: absolute;
             bottom: 120px;
@@ -240,7 +241,7 @@
             width: 380px; 
             background: white;
             border: 3px solid #3b82f6;
-            border-radius: 8px 8px 0 8px; 
+            border-radius: 8px 8px 0 8px; /* pointy corner at bottom right */
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             box-sizing: border-box;
             padding: 25px;
@@ -657,6 +658,9 @@
         function nextBreachOverlay(currentStep) {
             document.getElementById(`breach-overlay-${currentStep}`).style.display = 'none';
             document.getElementById(`breach-overlay-${currentStep + 1}`).style.display = 'flex';
+            if (currentStep === 1) {
+                document.getElementById('breach-overlay-2').style.opacity = '1';
+            }
         }
 
         function finishBreachOverlay() {
@@ -716,11 +720,20 @@
         // --- Main Timeline Router ---
         function handleTimeChange(newVal) {
             if (isPaused) {
-                slider.value = parseInt(yearLabel.innerText); // Force slider back if locked
+                slider.value = parseInt(yearLabel.innerText); 
                 return;
             }
 
             let currentYearIndex = parseInt(newVal);
+            let oldYearIndex = parseInt(yearLabel.innerText);
+
+            // If navigating backward, reset cinematic flags so they play again when going forward
+            if (currentYearIndex < oldYearIndex) {
+                if (currentYearIndex < 2) hasSeenBreach = false;
+                if (currentYearIndex < 7) hasSeenCrash = false;
+                if (currentYearIndex < 8) hasSeenResilience = false;
+                if (currentYearIndex < 12) hasSeenDeath = false;
+            }
 
             // Year 2 cinematic
             if (currentYearIndex >= 2 && !hasSeenBreach) {
@@ -731,7 +744,7 @@
 
                 const breachOverlay1 = document.getElementById('breach-overlay-1');
                 breachOverlay1.style.display = 'flex';
-                void breachOverlay1.offsetWidth; // Force Reflow for Fade-in
+                void breachOverlay1.offsetWidth; 
                 breachOverlay1.style.opacity = '1';
                 updateButtons();
                 return;
@@ -801,7 +814,7 @@
             }
         });
 
-        // --- Global Keyboard Navigation (ArrowRight to proceed) ---
+        // --- Global Keyboard Navigation ---
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight') {
                 const intro = document.getElementById('intro-overlay');
@@ -813,36 +826,82 @@
                 const res = document.getElementById('resilience-anchor');
                 const float = document.getElementById('floating-narrative');
 
-                // Trigger active buttons based on visibility
+                if (intro.style.display !== 'none' && intro.style.opacity !== '0') { dismissIntro(); }
+                else if (b1.style.display === 'flex' && b1.style.opacity !== '0') { nextBreachOverlay(1); }
+                else if (b2.style.display === 'flex' && b2.style.opacity !== '0') { nextBreachOverlay(2); }
+                else if (b3.style.display === 'flex' && b3.style.opacity !== '0') { finishBreachOverlay(); }
+                else if (crash.style.display === 'flex' && crash.style.opacity !== '0') { dismissCrash(); }
+                else if (death.style.display === 'flex' && death.style.opacity !== '0') { dismissDeath(); }
+                else if (res.style.display === 'block' && res.style.opacity !== '0') { document.getElementById('res-btn').click(); }
+                else if (float.style.display === 'block' && float.style.opacity !== '0') { document.getElementById('fn-btn').click(); }
+                else if (!isPaused && parseInt(slider.value) < 13) { document.getElementById('nextBtn').click(); }
+                
+            } else if (e.key === 'ArrowLeft') {
+                const intro = document.getElementById('intro-overlay');
+                const b1 = document.getElementById('breach-overlay-1');
+                const b2 = document.getElementById('breach-overlay-2');
+                const b3 = document.getElementById('breach-overlay-3');
+                const crash = document.getElementById('crash-overlay');
+                const death = document.getElementById('death-overlay');
+                const res = document.getElementById('resilience-anchor');
+                const float = document.getElementById('floating-narrative');
+
                 if (intro.style.display !== 'none' && intro.style.opacity !== '0') { 
-                    dismissIntro(); 
-                }
-                else if (b1.style.display === 'flex' && b1.style.opacity !== '0') { 
-                    nextBreachOverlay(1); 
-                }
-                else if (b2.style.display === 'flex' && b2.style.opacity !== '0') { 
-                    nextBreachOverlay(2); 
+                    // Do nothing, cannot go back before intro
                 }
                 else if (b3.style.display === 'flex' && b3.style.opacity !== '0') { 
-                    finishBreachOverlay(); 
+                    b3.style.display = 'none';
+                    b2.style.display = 'flex';
+                }
+                else if (b2.style.display === 'flex' && b2.style.opacity !== '0') { 
+                    b2.style.display = 'none';
+                    b1.style.display = 'flex';
+                    b1.style.opacity = '1';
+                }
+                else if (b1.style.display === 'flex' && b1.style.opacity !== '0') { 
+                    b1.style.opacity = '0';
+                    setTimeout(() => {
+                        b1.style.display = 'none';
+                        isPaused = false;
+                        handleTimeChange(1); 
+                    }, 300);
                 }
                 else if (crash.style.display === 'flex' && crash.style.opacity !== '0') { 
-                    dismissCrash(); 
+                    crash.style.opacity = '0';
+                    setTimeout(() => {
+                        crash.style.display = 'none';
+                        isPaused = false;
+                        handleTimeChange(6); 
+                    }, 300);
                 }
                 else if (death.style.display === 'flex' && death.style.opacity !== '0') { 
-                    dismissDeath(); 
+                    death.style.opacity = '0';
+                    window.speechSynthesis.cancel();
+                    setTimeout(() => {
+                        death.style.display = 'none';
+                        isPaused = false;
+                        handleTimeChange(11); 
+                    }, 300);
                 }
                 else if (res.style.display === 'block' && res.style.opacity !== '0') { 
-                    document.getElementById('res-btn').click(); 
+                    res.style.opacity = '0';
+                    setTimeout(() => {
+                        res.style.display = 'none';
+                        isPaused = false;
+                        handleTimeChange(7); 
+                    }, 300);
                 }
                 else if (float.style.display === 'block' && float.style.opacity !== '0') { 
-                    document.getElementById('fn-btn').click(); 
+                    float.style.opacity = '0';
+                    setTimeout(() => {
+                        float.style.display = 'none';
+                        document.getElementById('narrative').style.opacity = '1';
+                        isPaused = false;
+                        let curr = parseInt(slider.value);
+                        handleTimeChange(curr > 0 ? curr - 1 : 0);
+                    }, 300);
                 }
-                else if (!isPaused && parseInt(slider.value) < 13) { 
-                    document.getElementById('nextBtn').click(); 
-                }
-            } else if (e.key === 'ArrowLeft') {
-                if (!isPaused && parseInt(slider.value) > 0) { 
+                else if (!isPaused && parseInt(slider.value) > 0) { 
                     document.getElementById('prevBtn').click(); 
                 }
             }
