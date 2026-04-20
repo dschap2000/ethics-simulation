@@ -233,7 +233,6 @@
             transform: translateX(-50%);
             animation: shootUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
-        /* Fixed width and scale animation prevents text from wrapping awkwardly */
         .res-box {
             position: absolute;
             bottom: 120px;
@@ -241,7 +240,7 @@
             width: 380px; 
             background: white;
             border: 3px solid #3b82f6;
-            border-radius: 8px 8px 0 8px; /* pointy corner at bottom right */
+            border-radius: 8px 8px 0 8px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             box-sizing: border-box;
             padding: 25px;
@@ -302,7 +301,7 @@
         <h2>The Mission</h2>
         <p>Madison, Wisconsin.<br><br><strong>Forward Community Pantry</strong> and <strong>Apex Metro Relief</strong> are both dedicated to feeding the hungry. Amidst hostile immigration crackdowns, their mission is urgent: serve as many undocumented and fearful families as possible to ensure no one goes hungry in the shadows.</p>
         <p>But how they achieve this goal will define their legacy.</p>
-        <button class="start-btn" onclick="dismissIntro()">Enter Simulation</button>
+        <button class="start-btn" onclick="dismissIntro()">Enter Simulation (➡️)</button>
     </div>
 
     <div id="breach-overlay-1" class="overlay breach-sequence">
@@ -310,14 +309,14 @@
         <p><strong>Apex Metro Relief</strong> CEO Serena addresses the outreach team. She acknowledges the chilling effect of recent immigration crackdowns, noting that vulnerable families are retreating further into the shadows.</p>
         <p>"We must engage in deeper, more sustained dialogues with our community partners to locate and make contact with those who are too afraid to come to us," she urges.</p>
         <p>However, deeply influenced by the tenets of managerialism, Serena pairs this qualitative mandate with a ruthless quantitative ultimatum: <strong>50,000 meals must be served by the end of the year, or the bottom 10 percent of outreach coordinators will be placed on Performance Improvement Plans (PIPs).</strong></p>
-        <button class="start-btn" onclick="nextBreachOverlay(1)">Continue</button>
+        <button class="start-btn" onclick="nextBreachOverlay(1)">Continue (➡️)</button>
     </div>
 
     <div id="breach-overlay-2" class="overlay breach-sequence">
         <h2>YEAR TWO: THE SHORTCUT</h2>
         <p>Faced with the intense pressure of Serena's ultimatum and the agonizingly slow reality of building genuine community trust, an outreach coordinator named Robbie makes a fateful decision.</p>
         <p>Robbie discovers a security vulnerability in the local school district's IT system. Desperate to hit the 50,000-meal quota and avoid an impending PIP, Robbie exploits the flaw, secretly downloading the highly sensitive addresses of undocumented families to bypass the slow work of community outreach.</p>
-        <button class="start-btn" onclick="nextBreachOverlay(2)">Continue</button>
+        <button class="start-btn" onclick="nextBreachOverlay(2)">Continue (➡️)</button>
     </div>
 
     <div id="breach-overlay-3" class="overlay breach-sequence">
@@ -330,7 +329,7 @@
             [1] Willner, Lauren, and Sara M. Heller. 2024. "The Impact of Managerialism on Nonprofit Organizations Serving People Experiencing Houselessness in the United States." Social Sciences 13 (9): 436.
         </div>
 
-        <button class="start-btn" style="background-color: #ef4444; margin-top: 30px;" onclick="finishBreachOverlay()">Acknowledge</button>
+        <button class="start-btn" style="background-color: #ef4444; margin-top: 30px;" onclick="finishBreachOverlay()">Acknowledge (➡️)</button>
     </div>
 
     <div id="crash-overlay" class="overlay">
@@ -341,7 +340,7 @@
         <h2>SYSTEM FAILURE</h2>
         <p>A routine IT migration at the school district has uncovered the unauthorized data query from 5 years ago!</p>
         <p>State and federal regulators have descended on Apex Metro Relief. Their funding is immediately frozen. The community is terrified, and the resulting data-lockdown paralyzes the city's social services.</p>
-        <button class="start-btn" style="background-color: #111827; border: 2px solid #ef4444;" onclick="dismissCrash()">Face the Consequences</button>
+        <button class="start-btn" style="background-color: #111827; border: 2px solid #ef4444;" onclick="dismissCrash()">Face the Consequences (➡️)</button>
     </div>
 
     <div id="death-overlay" class="overlay">
@@ -349,7 +348,7 @@
         <h2>YEAR TWELVE: THE END</h2>
         <p>Apex fails to file its Form 990.</p>
         <p>Nobody can reach any of its listed employees. The line has been disconnected.</p>
-        <button class="start-btn" style="background-color: #374151; border: 2px solid #9ca3af;" onclick="dismissDeath()">Acknowledge</button>
+        <button class="start-btn" style="background-color: #374151; border: 2px solid #9ca3af;" onclick="dismissDeath()">Acknowledge (➡️)</button>
     </div>
 
     <h1>The Compound Interest of Trust</h1>
@@ -358,7 +357,7 @@
     <div class="dashboard">
         <div id="floating-narrative">
             <div id="fn-text" style="margin-bottom: 20px;"></div>
-            <button id="fn-btn" class="start-btn" style="margin: 0; font-size: 1rem; padding: 10px 20px;">Read & Continue 📜&darr;</button>
+            <button id="fn-btn" class="start-btn" style="margin: 0; font-size: 1rem; padding: 10px 20px;">Read & Continue 📜 (➡️)</button>
         </div>
 
         <div class="controls">
@@ -382,7 +381,7 @@
                         <div style="font-size: 0.8em; color: #6b7280; font-style: italic; margin-top: 10px;">
                             Miller-Stevens et al. 2022, 1214 (citing Quad Innovation Partnership, 2020)
                         </div>
-                        <button id="res-btn" class="start-btn" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 8px;">Proceed</button>
+                        <button id="res-btn" class="start-btn" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 8px;">Proceed (➡️)</button>
                     </div>
                 </div>
             </div>
@@ -579,7 +578,6 @@
             list.innerHTML = '';
             for(let i=0; i<=index; i++) {
                 const li = document.createElement('li');
-                // Bold the "Year X:" part dynamically
                 li.innerHTML = `<strong>Year ${i}:</strong> ${narratives[i].substring(narratives[i].indexOf(':') + 2)}`;
                 list.appendChild(li);
             }
@@ -591,31 +589,27 @@
             const target = document.getElementById('narrative');
             const btn = document.getElementById('fn-btn');
             
-            // Reset floater to center
             floater.style.transition = 'none';
             floater.style.top = '40%';
             floater.style.left = '50%';
             floater.style.transform = 'translate(-50%, -50%) scale(1)';
             floater.style.display = 'block';
-            void floater.offsetWidth; // Force reflow
+            void floater.offsetWidth; 
             floater.style.opacity = '1';
             
             document.getElementById('fn-text').innerText = text;
             
-            // Dim background text
             target.style.opacity = '0.3';
             target.innerText = text; 
 
             isPaused = true;
             updateButtons();
 
-            // Wait for user to click
             btn.onclick = () => {
                 const targetRect = target.getBoundingClientRect();
                 const floaterRect = floater.getBoundingClientRect();
                 const deltaY = targetRect.top - floaterRect.top;
                 
-                // Swoop Down
                 floater.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
                 floater.style.transform = `translate(-50%, calc(-50% + ${deltaY + 20}px)) scale(0.8)`;
                 floater.style.opacity = '0';
@@ -701,7 +695,6 @@
                         if (!isRetrigger) {
                             triggerSwoop(narratives[8], 8);
                         } else {
-                            // If user just clicked the dot to review, just unlock UI
                             isPaused = false;
                             updateButtons();
                         }
@@ -765,7 +758,6 @@
                 slider.value = 8;
                 updateChartAndUI(8);
                 
-                // Wait for chart animation to finish drawing before attaching the anchor
                 setTimeout(() => { showResilience(false); }, 450); 
                 updateButtons();
                 return;
@@ -806,6 +798,53 @@
         nextBtn.addEventListener('click', () => {
             if (!isPaused && parseInt(slider.value) < 13) {
                 handleTimeChange(parseInt(slider.value) + 1);
+            }
+        });
+
+        // --- Global Keyboard Navigation (ArrowRight to proceed) ---
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                const intro = document.getElementById('intro-overlay');
+                const b1 = document.getElementById('breach-overlay-1');
+                const b2 = document.getElementById('breach-overlay-2');
+                const b3 = document.getElementById('breach-overlay-3');
+                const crash = document.getElementById('crash-overlay');
+                const death = document.getElementById('death-overlay');
+                const res = document.getElementById('resilience-anchor');
+                const float = document.getElementById('floating-narrative');
+
+                // Trigger active buttons based on visibility
+                if (intro.style.display !== 'none' && intro.style.opacity !== '0') { 
+                    dismissIntro(); 
+                }
+                else if (b1.style.display === 'flex' && b1.style.opacity !== '0') { 
+                    nextBreachOverlay(1); 
+                }
+                else if (b2.style.display === 'flex' && b2.style.opacity !== '0') { 
+                    nextBreachOverlay(2); 
+                }
+                else if (b3.style.display === 'flex' && b3.style.opacity !== '0') { 
+                    finishBreachOverlay(); 
+                }
+                else if (crash.style.display === 'flex' && crash.style.opacity !== '0') { 
+                    dismissCrash(); 
+                }
+                else if (death.style.display === 'flex' && death.style.opacity !== '0') { 
+                    dismissDeath(); 
+                }
+                else if (res.style.display === 'block' && res.style.opacity !== '0') { 
+                    document.getElementById('res-btn').click(); 
+                }
+                else if (float.style.display === 'block' && float.style.opacity !== '0') { 
+                    document.getElementById('fn-btn').click(); 
+                }
+                else if (!isPaused && parseInt(slider.value) < 13) { 
+                    document.getElementById('nextBtn').click(); 
+                }
+            } else if (e.key === 'ArrowLeft') {
+                if (!isPaused && parseInt(slider.value) > 0) { 
+                    document.getElementById('prevBtn').click(); 
+                }
             }
         });
     </script>
