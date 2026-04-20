@@ -68,12 +68,10 @@
             display: none;
             opacity: 1; 
             background-color: #000000; 
-            /* UX Fix: Anchor to the top so headers don't jump, adjusted higher */
             justify-content: flex-start;
             padding-top: 15vh;
         }
         
-        /* Cinematic Fade-in for Year 2 Part 1 */
         #breach-overlay-1 {
             opacity: 0;
             transition: opacity 1s ease-in-out;
@@ -186,7 +184,6 @@
             transition: opacity 0.3s;
         }
 
-        /* Narrative History Panel */
         #history-panel {
             background-color: #f3f4f6;
             padding: 15px;
@@ -215,53 +212,61 @@
             border-bottom: none;
         }
 
-        /* --- YEAR 8: DYNAMIC RESILIENCE ANCHOR --- */
+        /* --- DYNAMIC CONCEPT ANCHOR SYSTEM --- */
         #chart-container {
             position: relative;
             width: 100%;
         }
-        #resilience-anchor {
+        #concept-anchor {
             display: none;
             position: absolute;
             z-index: 200;
             transition: opacity 0.5s ease-out;
         }
-        .res-line {
+        .concept-line {
             width: 3px;
-            background-color: #3b82f6; 
             height: 0;
             position: absolute;
             bottom: 0;
             left: 0;
             transform: translateX(-50%);
-            animation: shootUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
-        /* Fixed width and scale animation prevents text from wrapping awkwardly */
-        .res-box {
+        .concept-box {
             position: absolute;
             bottom: 120px;
-            right: 0; 
             width: 380px; 
             background: white;
-            border: 3px solid #3b82f6;
-            border-radius: 8px 8px 0 8px; /* pointy corner at bottom right */
+            border: 3px solid;
+            border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             box-sizing: border-box;
             padding: 25px;
-            transform-origin: bottom right;
             transform: scale(0);
             opacity: 0;
-            animation: popOut 0.5s 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        .res-content {
+        .concept-content {
             color: #1f2937;
         }
+        
+        /* Thematic Colors */
+        .theme-blue .concept-line { background-color: #3b82f6; }
+        .theme-blue .concept-box { border-color: #3b82f6; }
+        .theme-blue h3 { color: #3b82f6; }
+        .theme-blue .start-btn { background-color: #3b82f6; }
+
+        .theme-red .concept-line { background-color: #ef4444; }
+        .theme-red .concept-box { border-color: #ef4444; }
+        .theme-red h3 { color: #ef4444; }
+        .theme-red .start-btn { background-color: #ef4444; }
+        
+        /* Animation Triggers */
+        #concept-anchor.animate .concept-line { animation: shootUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        #concept-anchor.animate .concept-box { animation: popOut 0.5s 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         
         @keyframes shootUp { to { height: 120px; } }
         @keyframes popOut { to { transform: scale(1); opacity: 1; } }
         /* ------------------------------------------ */
         
-        /* Event Card Styles */
         .event-card {
             padding: 15px;
             border-radius: 8px;
@@ -296,6 +301,7 @@
             margin-top: 40px;
             font-style: italic;
             text-align: left;
+            line-height: 1.3;
         }
     </style>
 </head>
@@ -330,7 +336,7 @@
         <p>When human services are driven by rigid, market-based logic, ethical constraints are often the first casualty in the race to meet the quota.</p>
         
         <div class="citation">
-            [1] Willner, Lauren, and Sara M. Heller. 2024. "The Impact of Managerialism on Nonprofit Organizations Serving People Experiencing Houselessness in the United States." Social Sciences 13 (9): 436.
+            Willner, Lauren, and Sara M. Heller. 2024. "The Impact of Managerialism on Nonprofit Organizations Serving People Experiencing Houselessness in the United States." Social Sciences 13 (9): 436.
         </div>
 
         <button class="start-btn" style="background-color: #ef4444; margin-top: 30px;" onclick="finishBreachOverlay()">Acknowledge (➡️)</button>
@@ -376,16 +382,14 @@
         <div id="chart-container">
             <canvas id="impactChart" height="200"></canvas>
             
-            <div id="resilience-anchor">
-                <div class="res-line"></div>
-                <div class="res-box">
-                    <div class="res-content">
-                        <h3 style="margin-top: 0; color: #3b82f6;">Organizational Resilience</h3>
-                        <p style="font-size: 0.95em; line-height: 1.4;">While Apex crashed and burned from its unethical foundation, Forward Community Pantry absorbed the sector-wide shockwave. Organizational resilience is <em>"the ability of an organization to respond and adapt to incremental changes and sudden disruptions while also constantly anticipating and preparing for future challenges in order to sustainably meet [the organization's] mission."</em></p>
-                        <div style="font-size: 0.8em; color: #6b7280; font-style: italic; margin-top: 10px;">
-                            Miller-Stevens et al. 2022, 1214 (citing Quad Innovation Partnership, 2020)
-                        </div>
-                        <button id="res-btn" class="start-btn" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 8px;">Proceed (➡️)</button>
+            <div id="concept-anchor">
+                <div class="concept-line"></div>
+                <div class="concept-box" id="concept-box">
+                    <div class="concept-content">
+                        <h3 id="concept-title" style="margin-top: 0;"></h3>
+                        <p id="concept-text" style="font-size: 0.95em; line-height: 1.4;"></p>
+                        <div id="concept-citation" class="citation" style="margin-top: 10px;"></div>
+                        <button id="concept-btn" class="start-btn" style="width: 100%; margin-top: 15px; font-size: 1em; padding: 8px;">Proceed (➡️)</button>
                     </div>
                 </div>
             </div>
@@ -423,7 +427,7 @@
     </div>
 
     <script>
-        // --- Web Speech API for Automated Operator Voice ---
+        // --- Web Speech API ---
         function playOperatorMessage() {
             if ('speechSynthesis' in window) {
                 const msg = new SpeechSynthesisUtterance("We're sorry. The number you have dialed has been disconnected or is no longer in service. Goodbye.");
@@ -461,6 +465,38 @@
             "Year 12: Forward skyrockets past 1.1 million meals. Apex fails to file its Form 990. The offices are shuttered and the organization is dead.",
             "Year 13: Forward secures a massive $60 million federal grant, allowing it to scale its operations by 150 percent. The ethical approach becomes the unquestioned gold standard."
         ];
+
+        // --- Academic Concepts Dictionary ---
+        const academicConcepts = {
+            3: {
+                dataset: 0, // Apex
+                theme: 'theme-red',
+                title: "Goodhart's Law",
+                text: "The moment Apex made the 50,000 meals an explicit target tied to employee performance (PIPs), the metric stopped measuring actual community impact. <br><br><em>\"Goodhart's Law states that 'When a measure becomes a target, it ceases to be a good measure.'\"</em>",
+                citation: "Treem et al. 2023, zmad023"
+            },
+            5: {
+                dataset: 0, // Apex
+                theme: 'theme-red',
+                title: "The Cat-and-Mouse Game",
+                text: "While the city views Apex as a massive success, internally, leadership and staff are playing a dangerous game. <br><br><em>\"The future of work can be seen as a strategic, iterative cat-and-mouse game between organizations seeking to quantify the performance of work and workers altering their behavioral signaling...\"</em>",
+                citation: "Treem et al. 2023, zmad023"
+            },
+            6: {
+                dataset: 0, // Apex
+                theme: 'theme-red',
+                title: "Dubious Signaling",
+                text: "Apex's massive growth is entirely a dubious signal. Robbie's hack decoupled the organizational data from actual community trust. <br><br>Dubious signaling is defined as <em>\"occurring when workers engage in behaviors with the goal of producing misleading, false, or questionable data.\"</em>",
+                citation: "Treem et al. 2023, zmad023"
+            },
+            8: {
+                dataset: 1, // Forward
+                theme: 'theme-blue',
+                title: "Organizational Resilience",
+                text: "While Apex crashed and burned from its unethical foundation, Forward Community Pantry absorbed the sector-wide shockwave. <br><br>Organizational resilience is <em>\"the ability of an organization to respond and adapt to incremental changes and sudden disruptions while also constantly anticipating and preparing for future challenges in order to sustainably meet [the organization's] mission.\"</em>",
+                citation: "Miller-Stevens et al. 2022, 1214 (citing Quad Innovation Partnership, 2020)"
+            }
+        };
 
         // --- Custom Plugin for Warning & Coffin Icons ---
         const annotationsPlugin = {
@@ -528,16 +564,17 @@
                         title: { display: true, text: 'Cumulative Meals Served' }
                     }
                 },
-                // Interactivity: Click the Blue Dot at Year 8
+                // Interactivity: Click Specific Dots to Review Concepts
                 onClick: (event, activeElements) => {
                     if (activeElements.length > 0) {
                         const el = activeElements[0];
-                        // Dataset 1 is Ethical (Blue), Index 8 is Year 8
-                        if (el.datasetIndex === 1 && el.index === 8) {
+                        const conceptInfo = academicConcepts[el.index];
+                        // Ensure they clicked the correct dataset point for that year
+                        if (conceptInfo && el.datasetIndex === conceptInfo.dataset) {
                             if (!isPaused) {
                                 isPaused = true;
                                 updateButtons();
-                                showResilience(true); // true = isRetrigger
+                                showAcademicConcept(el.index, true); 
                             }
                         }
                     }
@@ -563,8 +600,10 @@
         let isPaused = true; 
         let hasSeenBreach = false;
         let hasSeenCrash = false;
-        let hasSeenResilience = false;
         let hasSeenDeath = false;
+        
+        // Track academic popups
+        let seenConcepts = { 3: false, 5: false, 6: false, 8: false };
 
         document.getElementById('narrative').innerText = narratives[0];
         updateButtons();
@@ -576,7 +615,6 @@
             slider.disabled = isPaused;
         }
 
-        // --- Narrative History Log ---
         function updateHistory(index) {
             const list = document.getElementById('history-list');
             list.innerHTML = '';
@@ -587,7 +625,7 @@
             }
         }
 
-        // --- Swooping Modal Logic (Requires Click) ---
+        // --- Swooping Modal Logic ---
         function triggerSwoop(text, yearIndex) {
             const floater = document.getElementById('floating-narrative');
             const target = document.getElementById('narrative');
@@ -602,7 +640,6 @@
             floater.style.opacity = '1';
             
             document.getElementById('fn-text').innerText = text;
-            
             target.style.opacity = '0.3';
             target.innerText = text; 
 
@@ -637,7 +674,6 @@
                 eventCards[year].style.display = index >= parseInt(year) ? 'block' : 'none';
             }
 
-            // DYNAMIC Y-AXIS TRIUMPH AT YEAR 13
             const targetMax = index === 13 ? 3000000 : 1200000;
             if (impactChart.options.scales.y.max !== targetMax) {
                 impactChart.options.scales.y.max = targetMax;
@@ -684,32 +720,6 @@
             }, 500);
         }
 
-        function showResilience(isRetrigger = false) {
-            const meta = impactChart.getDatasetMeta(1); // Anchored to Ethical (Blue) line
-            const point = meta.data[8];
-            if (point) {
-                const anchor = document.getElementById('resilience-anchor');
-                anchor.style.left = point.x + 'px';
-                anchor.style.top = point.y + 'px';
-                anchor.style.display = 'block';
-                void anchor.offsetWidth; 
-                anchor.style.opacity = '1';
-
-                document.getElementById('res-btn').onclick = () => {
-                    anchor.style.opacity = '0';
-                    setTimeout(() => {
-                        anchor.style.display = 'none';
-                        if (!isRetrigger) {
-                            triggerSwoop(narratives[8], 8);
-                        } else {
-                            isPaused = false;
-                            updateButtons();
-                        }
-                    }, 500);
-                };
-            }
-        }
-
         function dismissDeath() {
             const overlay = document.getElementById('death-overlay');
             overlay.style.opacity = '0';
@@ -718,6 +728,64 @@
                 overlay.style.display = 'none'; 
                 triggerSwoop(narratives[12], 12);
             }, 500);
+        }
+
+        // --- Academic Concept Engine ---
+        function showAcademicConcept(yearIndex, isRetrigger = false) {
+            const conceptInfo = academicConcepts[yearIndex];
+            const meta = impactChart.getDatasetMeta(conceptInfo.dataset);
+            const point = meta.data[yearIndex];
+
+            if (point) {
+                const anchor = document.getElementById('concept-anchor');
+                const box = document.getElementById('concept-box');
+                
+                anchor.className = conceptInfo.theme;
+                
+                document.getElementById('concept-title').innerHTML = conceptInfo.title;
+                document.getElementById('concept-text').innerHTML = conceptInfo.text;
+                document.getElementById('concept-citation').innerHTML = conceptInfo.citation;
+
+                // Smart Positioning logic to prevent cutoff
+                if (yearIndex >= 7) {
+                    box.style.left = 'auto';
+                    box.style.right = '-20px';
+                    box.style.transformOrigin = 'bottom right';
+                    box.style.marginLeft = '0';
+                } else if (yearIndex <= 3) {
+                    box.style.right = 'auto';
+                    box.style.left = '-20px';
+                    box.style.transformOrigin = 'bottom left';
+                    box.style.marginLeft = '0';
+                } else {
+                    box.style.right = 'auto';
+                    box.style.left = '50%';
+                    box.style.transformOrigin = 'bottom center';
+                    box.style.marginLeft = '-190px'; // Half of 380px width
+                }
+
+                anchor.style.left = point.x + 'px';
+                anchor.style.top = point.y + 'px';
+                anchor.style.display = 'block';
+                
+                anchor.classList.remove('animate');
+                void anchor.offsetWidth; // Force Reflow
+                anchor.classList.add('animate');
+                anchor.style.opacity = '1';
+
+                document.getElementById('concept-btn').onclick = () => {
+                    anchor.style.opacity = '0';
+                    setTimeout(() => {
+                        anchor.style.display = 'none';
+                        if (!isRetrigger) {
+                            triggerSwoop(narratives[yearIndex], yearIndex);
+                        } else {
+                            isPaused = false;
+                            updateButtons();
+                        }
+                    }, 500);
+                };
+            }
         }
 
         // --- Main Timeline Router ---
@@ -730,11 +798,14 @@
             let currentYearIndex = parseInt(newVal);
             let oldYearIndex = parseInt(yearLabel.innerText);
 
-            // If navigating backward, reset cinematic flags so they play again when going forward
+            // Reset flags if navigating backward
             if (currentYearIndex < oldYearIndex) {
                 if (currentYearIndex < 2) hasSeenBreach = false;
+                if (currentYearIndex < 3) seenConcepts[3] = false;
+                if (currentYearIndex < 5) seenConcepts[5] = false;
+                if (currentYearIndex < 6) seenConcepts[6] = false;
                 if (currentYearIndex < 7) hasSeenCrash = false;
-                if (currentYearIndex < 8) hasSeenResilience = false;
+                if (currentYearIndex < 8) seenConcepts[8] = false;
                 if (currentYearIndex < 12) hasSeenDeath = false;
             }
 
@@ -752,7 +823,7 @@
                 updateButtons();
                 return;
             }
-
+            
             // Year 7 cinematic
             if (currentYearIndex >= 7 && !hasSeenCrash) {
                 hasSeenCrash = true;
@@ -766,19 +837,7 @@
                 updateButtons();
                 return;
             }
-
-            // Year 8 Resilience Callout
-            if (currentYearIndex >= 8 && !hasSeenResilience) {
-                hasSeenResilience = true;
-                isPaused = true;
-                slider.value = 8;
-                updateChartAndUI(8);
-                
-                setTimeout(() => { showResilience(false); }, 450); 
-                updateButtons();
-                return;
-            }
-
+            
             // Year 12 cinematic
             if (currentYearIndex >= 12 && !hasSeenDeath) {
                 hasSeenDeath = true;
@@ -792,6 +851,18 @@
                     deathOverlay.style.opacity = '1'; 
                     playOperatorMessage(); 
                 }, 50);
+                updateButtons();
+                return;
+            }
+
+            // Dynamic Academic Concepts (Years 3, 5, 6, 8)
+            if (academicConcepts[currentYearIndex] && !seenConcepts[currentYearIndex]) {
+                seenConcepts[currentYearIndex] = true;
+                isPaused = true;
+                slider.value = currentYearIndex;
+                updateChartAndUI(currentYearIndex);
+                
+                setTimeout(() => { showAcademicConcept(currentYearIndex, false); }, 450); 
                 updateButtons();
                 return;
             }
@@ -826,7 +897,7 @@
                 const b3 = document.getElementById('breach-overlay-3');
                 const crash = document.getElementById('crash-overlay');
                 const death = document.getElementById('death-overlay');
-                const res = document.getElementById('resilience-anchor');
+                const concept = document.getElementById('concept-anchor');
                 const float = document.getElementById('floating-narrative');
 
                 if (intro.style.display !== 'none' && intro.style.opacity !== '0') { dismissIntro(); }
@@ -835,7 +906,7 @@
                 else if (b3.style.display === 'flex' && b3.style.opacity !== '0') { finishBreachOverlay(); }
                 else if (crash.style.display === 'flex' && crash.style.opacity !== '0') { dismissCrash(); }
                 else if (death.style.display === 'flex' && death.style.opacity !== '0') { dismissDeath(); }
-                else if (res.style.display === 'block' && res.style.opacity !== '0') { document.getElementById('res-btn').click(); }
+                else if (concept.style.display === 'block' && concept.style.opacity !== '0') { document.getElementById('concept-btn').click(); }
                 else if (float.style.display === 'block' && float.style.opacity !== '0') { document.getElementById('fn-btn').click(); }
                 else if (!isPaused && parseInt(slider.value) < 13) { document.getElementById('nextBtn').click(); }
                 
@@ -846,11 +917,11 @@
                 const b3 = document.getElementById('breach-overlay-3');
                 const crash = document.getElementById('crash-overlay');
                 const death = document.getElementById('death-overlay');
-                const res = document.getElementById('resilience-anchor');
+                const concept = document.getElementById('concept-anchor');
                 const float = document.getElementById('floating-narrative');
 
                 if (intro.style.display !== 'none' && intro.style.opacity !== '0') { 
-                    // Do nothing, cannot go back before intro
+                    // Do nothing
                 }
                 else if (b3.style.display === 'flex' && b3.style.opacity !== '0') { 
                     b3.style.display = 'none';
@@ -863,35 +934,23 @@
                 }
                 else if (b1.style.display === 'flex' && b1.style.opacity !== '0') { 
                     b1.style.opacity = '0';
-                    setTimeout(() => {
-                        b1.style.display = 'none';
-                        isPaused = false;
-                        handleTimeChange(1); 
-                    }, 300);
+                    setTimeout(() => { b1.style.display = 'none'; isPaused = false; handleTimeChange(1); }, 300);
                 }
                 else if (crash.style.display === 'flex' && crash.style.opacity !== '0') { 
                     crash.style.opacity = '0';
-                    setTimeout(() => {
-                        crash.style.display = 'none';
-                        isPaused = false;
-                        handleTimeChange(6); 
-                    }, 300);
+                    setTimeout(() => { crash.style.display = 'none'; isPaused = false; handleTimeChange(6); }, 300);
                 }
                 else if (death.style.display === 'flex' && death.style.opacity !== '0') { 
                     death.style.opacity = '0';
                     window.speechSynthesis.cancel();
-                    setTimeout(() => {
-                        death.style.display = 'none';
-                        isPaused = false;
-                        handleTimeChange(11); 
-                    }, 300);
+                    setTimeout(() => { death.style.display = 'none'; isPaused = false; handleTimeChange(11); }, 300);
                 }
-                else if (res.style.display === 'block' && res.style.opacity !== '0') { 
-                    res.style.opacity = '0';
-                    setTimeout(() => {
-                        res.style.display = 'none';
-                        isPaused = false;
-                        handleTimeChange(7); 
+                else if (concept.style.display === 'block' && concept.style.opacity !== '0') { 
+                    concept.style.opacity = '0';
+                    setTimeout(() => { 
+                        concept.style.display = 'none'; 
+                        isPaused = false; 
+                        handleTimeChange(parseInt(slider.value) - 1); 
                     }, 300);
                 }
                 else if (float.style.display === 'block' && float.style.opacity !== '0') { 
