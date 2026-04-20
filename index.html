@@ -242,8 +242,8 @@
         .concept-box {
             position: absolute;
             width: 420px; 
-            max-height: 60vh; /* Limits height to 60% of viewport */
-            overflow-y: auto; /* Enables scrolling if content overflows */
+            max-height: 60vh; 
+            overflow-y: auto; 
             background: white;
             border: 3px solid;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -498,6 +498,13 @@
                 text: "The moment Apex made the 50,000 meals an explicit target tied to employee performance (PIPs), the metric stopped measuring actual community impact. <br><br>Measures fail when they assume signals are <em>\"honest, reliable, static, or interpreted accurately.\"</em><sup>1</sup> Over time, the metric becomes completely <em>\"decoupled... from the organizational activities they mean to capture and evaluate.\"</em><sup>1</sup>",
                 citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 3."
             },
+            4: {
+                dataset: 1, // Forward
+                theme: 'theme-blue',
+                title: "Community Reciprocity & Invisible Work",
+                text: "In Year 4, Forward deliberately diverts time and resources away from maximizing their \"meals served\" metric to partner with a local legal clinic. In a system driven by managerialism, this action appears highly inefficient because it does not directly boost the primary output measure.<br><br>Sociologist David Beer notes that <em>\"measurement draws attention to certain things... whilst pulling our gaze away from other aspects of the social and the personal.\"</em><sup>1</sup> By focusing on the unquantifiable safety and legal wellbeing of their beneficiaries rather than raw volume, Forward is practicing <em>community reciprocity</em>.<sup>2</sup> They are building a multidimensional safety net that prioritizes the actual needs of the vulnerable over the illusion of efficiency.",
+                citation: "<div style='margin-bottom: 8px;'>[1] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 60.</div><div>[2] Witmer, Hope, and Marcela Sarmiento Mellinger. 2016. \"Organizational Resilience: Nonprofit Organizations' Response to Change.\" <em>Work</em> 54: 255-265.</div>"
+            },
             5: {
                 dataset: 0, // Apex
                 theme: 'theme-red',
@@ -633,7 +640,7 @@
         let hasSeenDeath = false;
         
         // Track academic popups
-        let seenConcepts = { 2: false, 3: false, 5: false, 6: false, 8: false, 9: false };
+        let seenConcepts = { 2: false, 3: false, 4: false, 5: false, 6: false, 8: false, 9: false };
 
         document.getElementById('narrative').innerText = narratives[0];
         updateButtons();
@@ -803,7 +810,7 @@
                     box.style.transformOrigin = 'top right';
                     box.style.marginLeft = '0';
                     box.style.borderRadius = '8px 0 8px 8px';
-                } else if (yearIndex <= 3) {
+                } else if (yearIndex <= 4) {
                     box.style.right = 'auto';
                     box.style.left = '-20px';
                     box.style.transformOrigin = 'bottom left';
@@ -861,6 +868,7 @@
             if (currentYearIndex < oldYearIndex) {
                 if (currentYearIndex < 2) { hasSeenBreach = false; seenConcepts[2] = false; }
                 if (currentYearIndex < 3) seenConcepts[3] = false;
+                if (currentYearIndex < 4) seenConcepts[4] = false;
                 if (currentYearIndex < 5) seenConcepts[5] = false;
                 if (currentYearIndex < 6) seenConcepts[6] = false;
                 if (currentYearIndex < 7) hasSeenCrash = false;
@@ -915,7 +923,7 @@
                 return;
             }
 
-            // Dynamic Academic Concepts (Years 2, 3, 5, 6, 8, 9)
+            // Dynamic Academic Concepts (Years 2, 3, 4, 5, 6, 8, 9)
             // Notice Year 2 is NOT auto-triggered here, to protect the cinematic
             if (academicConcepts[currentYearIndex] && !seenConcepts[currentYearIndex] && currentYearIndex !== 2) {
                 seenConcepts[currentYearIndex] = true;
