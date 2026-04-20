@@ -232,7 +232,7 @@
         }
         .concept-box {
             position: absolute;
-            width: 380px; 
+            width: 420px; 
             background: white;
             border: 3px solid;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -470,8 +470,8 @@
                 dataset: 0, // Apex
                 theme: 'theme-red',
                 title: "The Illusion of Objectivity & HPWS",
-                text: "When Serena issued her 50,000-meal ultimatum, she hid behind the \"objectivity\" of numbers to present a ruthless decision as a neutral, unbiased strategic shift. Managers frequently rely on quantification to provide an <em>\"answer to a moral demand for impartiality and fairness.\"</em><sup>1</sup> The quota removes the need for human judgment and instead <em>\"lends authority\"</em><sup>1</sup> to those who enforce it.<br><br>However, deploying a High-Performance Work System (HPWS) creates a dangerous paradox. The intense performance demands of an HPWS force employees into a state of resource scarcity, triggering a defensive <em>\"bottom-line mentality.\"</em><sup>2</sup> The system systematically crowds out ethics; unethical shortcuts cease to be isolated moral failures and instead become predictable, rational survival tactics to avoid the penalties of underperformance.",
-                citation: "<div style='margin-bottom: 8px;'>[1] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 49.</div><div>[2] Wang, Jigan, Qing Jia, Tianfeng Dong, Xiaochan Yang, and Haodong Jiang. 2025. \"Ethical Dilemmas in Performance-Oriented Management: A Dual-Path Systems Model.\" <em>Systems</em> 13 (10): 900, 5.</div>"
+                text: "When Serena issued her 50,000-meal ultimatum and threatened performance improvement plans (PIPs), she was hiding behind the universally perceived objectivity of numbers to justify her decision in a way that she can present as a natural, logical, and unbiased strategic shift. Managers frequently rely on numbers to make ruthless decisions look like logical <em>\"answer[s] to a moral demand for impartiality and fairness\"</em><sup>1</sup>. The 50,000 quota removes Serena's need to exercise human judgment and <em>\"lends authority\"</em><sup>1</sup> to middle managers by enabling them to <em>\"crush, demean, and devalue\"</em><sup>2</sup> anyone who fails to meet a supposedly neutral demand. The numbers suddenly become an immoderate power that decides who gets fired, completely insulating leadership from the impending ethical collapse of the organization. Paradoxically, the removal of power by the numbers from leadership boomerangs to elevate power in the managers who enforce said numbers. The constant ricochet of power among high-ranking leadership, middle management, and the implicit objectivity of numbers shatters the efficiency gains of a high performance work system by all but demanding the removal of ethics from organizational culture.<br><br>Deploying a High-Performance Work System (HPWS) in this manner creates a dangerous paradox. The intense performance demands of an HPWS force employees into a state of resource scarcity, triggering a defensive <em>\"bottom-line mentality\"</em><sup>3</sup> response. The HPWS shatters its own efficiency gains by systematically crowding out ethics; unethical shortcuts cease to be isolated moral failures and instead become routine survival tactics to avoid the penalties of underperformance.",
+                citation: "<div style='margin-bottom: 8px;'>[1] Porter, Theodore M. <em>Trust in Numbers: The Pursuit of Objectivity in Science and Public Life</em>. NED-New edition. Princeton University Press, 2020. https://doi-org.ezproxy.library.wisc.edu/10.2307/j.ctvxcrz2b.</div><div style='margin-bottom: 8px;'>[2] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 49.</div><div>[3] Wang, Jigan, Qing Jia, Tianfeng Dong, Xiaochan Yang, and Haodong Jiang. 2025. \"Ethical Dilemmas in Performance-Oriented Management: A Dual-Path Systems Model.\" <em>Systems</em> 13 (10): 900, 5.</div>"
             },
             3: {
                 dataset: 0, // Apex
@@ -608,7 +608,7 @@
         let hasSeenDeath = false;
         
         // Track academic popups
-        let seenConcepts = { 3: false, 5: false, 6: false, 8: false };
+        let seenConcepts = { 2: false, 3: false, 5: false, 6: false, 8: false };
 
         document.getElementById('narrative').innerText = narratives[0];
         updateButtons();
@@ -712,7 +712,8 @@
             overlay.style.opacity = '0';
             setTimeout(() => { 
                 overlay.style.display = 'none'; 
-                triggerSwoop(narratives[2], 2);
+                seenConcepts[2] = true;
+                showAcademicConcept(2, false);
             }, 500);
         }
 
@@ -787,7 +788,7 @@
                     box.style.right = 'auto';
                     box.style.left = '50%';
                     box.style.transformOrigin = 'top center';
-                    box.style.marginLeft = '-190px'; // Half of 380px width
+                    box.style.marginLeft = '-210px'; // Half of 420px width
                     box.style.borderRadius = '8px';
                 }
 
@@ -805,13 +806,7 @@
                     setTimeout(() => {
                         anchor.style.display = 'none';
                         if (!isRetrigger) {
-                            // Only trigger swoop if it wasn't automatically triggered at Year 2 during cinematic
-                            if (yearIndex !== 2) {
-                                triggerSwoop(narratives[yearIndex], yearIndex);
-                            } else {
-                                isPaused = false;
-                                updateButtons();
-                            }
+                            triggerSwoop(narratives[yearIndex], yearIndex);
                         } else {
                             isPaused = false;
                             updateButtons();
@@ -833,7 +828,7 @@
 
             // Reset flags if navigating backward
             if (currentYearIndex < oldYearIndex) {
-                if (currentYearIndex < 2) hasSeenBreach = false;
+                if (currentYearIndex < 2) { hasSeenBreach = false; seenConcepts[2] = false; }
                 if (currentYearIndex < 3) seenConcepts[3] = false;
                 if (currentYearIndex < 5) seenConcepts[5] = false;
                 if (currentYearIndex < 6) seenConcepts[6] = false;
