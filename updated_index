@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Compound Interest of Trust</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 800px; 
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9fafb;
+            color: #1f2937;
+            overflow-x: hidden;
+            position: relative;
+        }
+        h1 { text-align: center; }
+        
+        /* Cinematic Overlays */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            color: #ffffff;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .overlay h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #ef4444;
+        }
+        .overlay p {
+            font-size: 1.3em;
+            max-width: 700px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .start-btn {
+            padding: 12px 24px;
+            font-size: 1.2em;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .start-btn:hover { background-color: #2563eb; }
+
+        #intro-overlay { background-color: #111827; }
+
+        /* Breach Sequence */
+        .breach-sequence {
+            display: none;
+            opacity: 1; 
+            background-color: #000000; 
+            justify-content: flex-start;
+            padding-top: 15vh;
+        }
+        
+        #breach-overlay-1 {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        /* Police Crash Overlay */
+        #crash-overlay {
+            display: none;
+            opacity: 0;
+            animation: emergencyFlash 0.6s infinite alternate;
+        }
+        #crash-overlay h2 {
+            color: #ffffff;
+            font-size: 3em;
+            text-shadow: 2px 2px 10px #000;
+        }
+        .siren-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .siren {
+            font-size: 5em;
+            animation: spinSiren 1s linear infinite;
+        }
+
+        /* Death Overlay */
+        #death-overlay {
+            display: none;
+            opacity: 0;
+            background-color: #111827;
+        }
+        .phone-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: shake 0.5s infinite alternate;
+        }
+        
+        @keyframes emergencyFlash {
+            from { background-color: rgba(185, 28, 28, 0.95); }
+            to { background-color: rgba(127, 29, 29, 0.95); }
+        }
+        @keyframes spinSiren {
+            0% { transform: rotateY(0deg); text-shadow: 0 0 30px #ef4444; }
+            50% { transform: rotateY(180deg); text-shadow: 0 0 50px #3b82f6; }
+            100% { transform: rotateY(360deg); text-shadow: 0 0 30px #ef4444; }
+        }
+        @keyframes shake {
+            0% { transform: rotate(-10deg); }
+            100% { transform: rotate(10deg); }
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column; 
+            gap: 20px;
+            position: relative;
+        }
+        .controls { text-align: center; }
+        input[type=range] { cursor: pointer; }
+        .nav-btn {
+            padding: 8px 16px;
+            background-color: #e5e7eb;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        .nav-btn:hover { background-color: #d1d5db; }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .year-display {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        /* Floating Swoop Modal Element */
+        #floating-narrative {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.98);
+            border: 2px solid #3b82f6;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            text-align: center;
+            width: 80%;
+            max-width: 550px;
+            max-height: 60vh;
+            overflow-y: auto;
+            z-index: 500;
+            opacity: 0;
+            display: none;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Custom Scrollbar for Floating Narrative */
+        #floating-narrative::-webkit-scrollbar { width: 8px; }
+        #floating-narrative::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 4px; }
+        #floating-narrative::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+        #floating-narrative::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        #narrative {
+            padding: 15px;
+            background-color: #e5e7eb;
+            border-left: 5px solid #3b82f6;
+            border-radius: 4px;
+            font-size: 1.1em;
+            line-height: 1.5;
+            min-height: 60px;
+            transition: opacity 0.3s;
+        }
+
+        #history-panel {
+            background-color: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+        }
+        #history-panel summary {
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #1f2937;
+            outline: none;
+        }
+        #history-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 15px;
+        }
+        #history-list li {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            line-height: 1.4;
+        }
+        #history-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* --- DYNAMIC CONCEPT ANCHOR SYSTEM --- */
+        #chart-container {
+            position: relative;
+            width: 100%;
+        }
+        #concept-anchor {
+            display: none;
+            position: absolute;
+            z-index: 200;
+            transition: opacity 0.5s ease-out;
+        }
+        .concept-line {
+            width: 3px;
+            height: 0;
+            position: absolute;
+            left: 0;
+            transform: translateX(-50%);
+        }
+        
+        .concept-box {
+            position: absolute;
+            width: 420px; 
+            max-height: 60vh; /* Limits height to 60% of viewport */
+            overflow-y: auto; /* Enables scrolling if content overflows */
+            background: white;
+            border: 3px solid;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+            padding: 25px;
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        /* Custom Scrollbar for Concept Box */
+        .concept-box::-webkit-scrollbar { width: 8px; }
+        .concept-box::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 4px; }
+        .concept-box::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+        .concept-box::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+        .concept-content {
+            color: #1f2937;
+        }
+        
+        /* Stylized Bullet Points for Pop-ups */
+        .concept-text-list {
+            padding-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 0;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        .concept-text-list li {
+            margin-bottom: 12px;
+        }
+        
+        /* Thematic Colors */
+        .theme-blue .concept-line { background-color: #3b82f6; }
+        .theme-blue .concept-box { border-color: #3b82f6; }
+        .theme-blue h3 { color: #3b82f6; }
+        .theme-blue .start-btn { background-color: #3b82f6; }
+
+        .theme-red .concept-line { background-color: #ef4444; }
+        .theme-red .concept-box { border-color: #ef4444; }
+        .theme-red h3 { color: #ef4444; }
+        .theme-red .start-btn { background-color: #ef4444; }
+        
+        /* Dynamic Animation Triggers */
+        #concept-anchor.animate .concept-line.shoot-up { bottom: 0; top: auto; animation: shootUp 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        #concept-anchor.animate .concept-line.shoot-down { top: 0; bottom: auto; animation: shootDown 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        #concept-anchor.animate .concept-box { animation: popOut 0.5s 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        @keyframes shootUp { to { height: 40px; } }
+        @keyframes shootDown { to { height: 40px; } }
+        @keyframes popOut { to { transform: scale(1); opacity: 1; } }
+        /* ------------------------------------------ */
+        
+        .event-card {
+            padding: 15px;
+            border-radius: 8px;
+            display: none; 
+            animation: fadeIn 0.5s ease-in-out;
+            font-size: 1.1em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 10px;
+        }
+        .event-success { background-color: #dcfce7; border: 1px solid #86efac; color: #166534; }
+        .event-danger { background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; }
+        .event-dead { background-color: #f3f4f6; border: 1px solid #9ca3af; color: #374151; }
+        
+        .robbie-graphic {
+            text-align: center;
+            font-size: 3em;
+            margin: 15px 0;
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px dashed #fca5a5;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .citation {
+            font-size: 0.85em;
+            color: #9ca3af;
+            margin-top: 30px;
+            text-align: left;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="intro-overlay" class="overlay">
+        <h2>The Mission</h2>
+        <p>Madison, Wisconsin.<br><br><strong>Forward Community Pantry</strong> and <strong>Apex Metro Relief</strong> are both dedicated to feeding the hungry. Amidst hostile immigration crackdowns, their mission is urgent: serve as many undocumented and fearful families as possible to ensure no one goes hungry in the shadows.</p>
+        <p>But how they achieve this goal will define their legacy.</p>
+        <button class="start-btn" onclick="dismissIntro()">Enter Simulation (➡️)</button>
+    </div>
+
+    <div id="breach-overlay-1" class="overlay breach-sequence">
+        <h2>YEAR TWO: THE PRESSURE MOUNTS</h2>
+        <p><strong>Apex Metro Relief</strong> CEO Serena addresses the outreach team. She acknowledges the chilling effect of recent immigration crackdowns, noting that vulnerable families are retreating further into the shadows.</p>
+        <p>"We must engage in deeper, more sustained dialogues with our community partners to locate and make contact with those who are too afraid to come to us," she urges.</p>
+        <p>However, deeply influenced by the tenets of managerialism, Serena pairs this qualitative mandate with a ruthless quantitative ultimatum: <strong>50,000 meals must be served by the end of the year, or the bottom 10 percent of outreach coordinators will be placed on Performance Improvement Plans (PIPs).</strong></p>
+        <button class="start-btn" onclick="nextBreachOverlay(1)">Continue (➡️)</button>
+    </div>
+
+    <div id="breach-overlay-2" class="overlay breach-sequence">
+        <h2>YEAR TWO: THE SHORTCUT</h2>
+        <p>Faced with the intense pressure of Serena's ultimatum and the agonizingly slow reality of building genuine community trust, an outreach coordinator named Robbie makes a fateful decision.</p>
+        <p>Robbie discovers a security vulnerability in the local school district's IT system. Desperate to hit the 50,000-meal quota and avoid an impending PIP, Robbie exploits the flaw, secretly downloading the highly sensitive addresses of undocumented families to bypass the slow work of community outreach.</p>
+        <button class="start-btn" onclick="nextBreachOverlay(2)">Continue (➡️)</button>
+    </div>
+
+    <div id="breach-overlay-3" class="overlay breach-sequence">
+        <h2>YEAR TWO: THE COST OF MANAGERIALISM</h2>
+        <p>Robbie's decision is not an isolated moral failure, but a predictable symptom of a systemic organizational culture driven by efficiency and targets.</p>
+        <p>"Managerialism emphasizes the 'bottom line', which is often based on metrics and outputs rather than the quality of services and community needs."<sup>1</sup></p>
+        <p>When human services are driven by rigid, market-based logic, ethical constraints are often the first casualty in the race to meet the quota.</p>
+        
+        <div class="citation" style="text-align: center;">
+            [1] Willner, Lauren, and Sara M. Heller. 2024. "The Impact of Managerialism on Nonprofit Organizations Serving People Experiencing Houselessness in the United States." <em>Social Sciences</em> 13 (9): 436.
+        </div>
+
+        <button class="start-btn" style="background-color: #ef4444; margin-top: 30px;" onclick="finishBreachOverlay()">Acknowledge (➡️)</button>
+    </div>
+
+    <div id="crash-overlay" class="overlay">
+        <div class="siren-container">
+            <div class="siren">🚨</div>
+            <div class="siren">🚨</div>
+        </div>
+        <h2>SYSTEM FAILURE</h2>
+        <p>A routine IT migration at the school district has uncovered the unauthorized data query from 5 years ago!</p>
+        <p>State and federal regulators have descended on Apex Metro Relief. Their funding is immediately frozen. The community is terrified, and the resulting data-lockdown paralyzes the city's social services.</p>
+        <button class="start-btn" style="background-color: #111827; border: 2px solid #ef4444;" onclick="dismissCrash()">Face the Consequences (➡️)</button>
+    </div>
+
+    <div id="death-overlay" class="overlay">
+        <div class="phone-icon">☎️</div>
+        <h2>YEAR TWELVE: THE END</h2>
+        <p>Apex fails to file its Form 990.</p>
+        <p>Nobody can reach any of its listed employees. The line has been disconnected.</p>
+        <button class="start-btn" style="background-color: #374151; border: 2px solid #9ca3af;" onclick="dismissDeath()">Acknowledge (➡️)</button>
+    </div>
+
+    <h1>The Compound Interest of Trust</h1>
+    <p style="text-align: center;">Tracking cumulative meals served over 13 years.</p>
+
+    <div class="dashboard">
+        <div id="floating-narrative">
+            <div id="fn-text" style="margin-bottom: 20px;"></div>
+            <button id="fn-btn" class="start-btn" style="margin: 0; font-size: 1rem; padding: 10px 20px;">Read & Continue 📜 (➡️)</button>
+        </div>
+
+        <div class="controls">
+            <div class="year-display">Current Year: <span id="yearLabel">0</span></div>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;">
+                <button id="prevBtn" class="nav-btn">&larr; Prev</button>
+                <input type="range" id="yearSlider" min="0" max="13" value="0" step="1" style="width: 60%; margin: 0;">
+                <button id="nextBtn" class="nav-btn">Next &rarr;</button>
+            </div>
+        </div>
+
+        <div id="chart-container">
+            <canvas id="impactChart" height="200"></canvas>
+            
+            <div id="concept-anchor">
+                <div id="concept-line" class="concept-line"></div>
+                <div class="concept-box" id="concept-box">
+                    <div class="concept-content">
+                        <h3 id="concept-title" style="margin-top: 0; margin-bottom: 5px;"></h3>
+                        <div id="concept-text"></div>
+                        <div id="concept-citation" class="citation"></div>
+                        <button id="concept-btn" class="start-btn" style="width: 100%; margin-top: 20px; font-size: 1em; padding: 8px;">Proceed (➡️)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="narrative"></div>
+        
+        <details id="history-panel">
+            <summary>📜 Narrative History (Click to Expand)</summary>
+            <ul id="history-list">
+                </ul>
+        </details>
+        
+        <div id="alerts-container">
+            <div id="event-2" class="event-card event-danger">
+                <strong>🚨 Year 2:</strong> Apex silently breaches the school IT database. Meanwhile, Forward suffers a severe food shortage due to untracked inventory!
+            </div>
+            <div id="event-4" class="event-card event-success">
+                <strong>🤝 Year 4:</strong> Forward Community Pantry forms key local partnerships! Trust deepens.
+            </div>
+            <div id="event-7" class="event-card event-danger">
+                <strong>🛑 Year 7:</strong> BUSTED! Audit discovers the breach! Robbie confesses, gets fired, and funding is frozen.
+                <div class="robbie-graphic">🏢 ➡️ 🚶‍♂️📦 🥺</div>
+            </div>
+            <div id="event-10" class="event-card event-success">
+                <strong>🏆 Year 10:</strong> Forward Community Pantry overtakes Apex Metro Relief!
+            </div>
+            <div id="event-12" class="event-card event-dead">
+                <strong>⚰️ Year 12:</strong> Apex offices shuttered. No Form 990 filed. The organization is dead.
+            </div>
+            <div id="event-13" class="event-card event-success">
+                <strong>💰 Year 13:</strong> Forward secures $60M federal grant!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Web Speech API ---
+        function playOperatorMessage() {
+            if ('speechSynthesis' in window) {
+                const msg = new SpeechSynthesisUtterance("We're sorry. The number you have dialed has been disconnected or is no longer in service. Goodbye.");
+                msg.lang = 'en-US';
+                msg.rate = 0.9;
+                msg.pitch = 1.1;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const femaleVoice = voices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('zira') || v.name.toLowerCase().includes('samantha'));
+                if (femaleVoice) msg.voice = femaleVoice;
+                
+                window.speechSynthesis.speak(msg);
+            }
+        }
+        window.speechSynthesis.getVoices();
+
+        // --- Data Arrays ---
+        const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12', 'Year 13'];
+        const unethicalData = [0, 20000, 70000, 150000, 250000, 360000, 480000, 530000, 535000, 538000, 540000, 541000, 541000, null];
+        const ethicalData = [0, 15000, 25000, 60000, 95000, 140000, 200000, 210000, 220000, 350000, 550000, 860000, 1100000, 2750000];
+        
+        const narratives = [
+            "Year 0: Initiation. Both organizations start at zero meals. The community need is high.",
+            "Year 1: Early efforts begin. Apex Metro Relief hits 20k; Forward Community Pantry reaches 15k.",
+            "Year 2: The Shortcut and The Shortfall. Apex bypasses outreach entirely by stealing school data, causing their numbers to spike to 70k. Meanwhile, Forward's extreme resistance to formal tracking backfires; a failure to measure inventory burn rate leads to a severe food shortage, stalling their growth at 25k.",
+            "Year 3: Apex scales with praiseworthy efficiency, hitting 150k meals. Forward recovers from its shortage and slowly builds community trust.",
+            "Year 4: Apex's metrics are incredible. Forward hits 95k, but they successfully establish vital, localized trust networks with neighborhood leaders.",
+            "Year 5: Apex reaches 360k meals. They are viewed as the gold standard of efficiency in the city.",
+            "Year 6: Apex climbs to 480k. Forward's ground-game is gaining exponential momentum, hitting 200k meals.",
+            "Year 7: BUSTED! Apex reaches a massive 530k meals before a routine IT migration discovers their historical data breach. Robbie confesses to hacking the system, insisting he genuinely wanted to help. He gets fired anyway because intent is irrelevant. Regulators freeze their funding. The citywide scandal severely stunts Forward's growth as well.",
+            "Year 8: Fallout. The community completely loses trust in Apex. The systemic shockwave temporarily stalls Forward's efforts, pushing them to only 220k meals.",
+            "Year 9: Forward begins recovering, relying on its deep trust networks to push to 350k meals while Apex remains paralyzed.",
+            "Year 10: THE CROSSOVER. Forward surges to 550k meals, officially overtaking Apex.",
+            "Year 11: Forward demonstrates the compounding power of trust, hitting 860k meals. Apex files what will be its last Form 990, barely functioning.",
+            "Year 12: Forward skyrockets past 1.1 million meals. Apex fails to file its Form 990. The offices are shuttered and the organization is dead.",
+            "Year 13: Forward secures a massive $60 million federal grant, allowing it to scale its operations by 150 percent. The ethical approach becomes the unquestioned gold standard."
+        ];
+
+        // --- Academic Concepts Dictionary (Bulleted Formatting) ---
+        const academicConcepts = {
+            2: {
+                0: { // Apex Dataset
+                    theme: 'theme-red',
+                    title: "The Illusion of Objectivity & HPWS",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>The Facade of Neutrality:</strong> Serena's 50,000-meal ultimatum hides behind the perceived objectivity of numbers, presenting a ruthless decision as a natural, unbiased shift.</li>" +
+                            "<li><strong>Delegating the Dirty Work:</strong> Managers use numbers as a logical <em>\"answer to a moral demand for impartiality and fairness,\"</em><sup>1</sup> removing the need for human judgment and lending authority to those who <em>\"crush, demean, and devalue\"</em><sup>2</sup> underperformers.</li>" +
+                            "<li><strong>The HPWS Paradox:</strong> Deploying a High-Performance Work System (HPWS) creates intense resource scarcity, triggering a defensive <em>\"bottom-line mentality.\"</em><sup>3</sup></li>" +
+                            "<li><strong>Ethical Collapse:</strong> This system crowds out ethics; unethical shortcuts shift from isolated moral failures to routine survival tactics to avoid penalties.</li>" +
+                          "</ul>",
+                    citation: "<div style='margin-bottom: 8px;'>[1] Porter, Theodore M. <em>Trust in Numbers: The Pursuit of Objectivity in Science and Public Life</em>. NED-New edition. Princeton University Press, 2020. https://doi-org.ezproxy.library.wisc.edu/10.2307/j.ctvxcrz2b.</div><div style='margin-bottom: 8px;'>[2] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 49.</div><div>[3] Wang, Jigan, Qing Jia, Tianfeng Dong, Xiaochan Yang, and Haodong Jiang. 2025. \"Ethical Dilemmas in Performance-Oriented Management: A Dual-Path Systems Model.\" <em>Systems</em> 13 (10): 900, 5.</div>"
+                },
+                1: { // Forward Dataset
+                    theme: 'theme-blue',
+                    title: "Accountability Myopia",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>Operational Blindness:</strong> Forward's extreme resistance to Apex's corporate managerialism leads them to reject formal metrics almost entirely.</li>" +
+                            "<li><strong>The Cost of Inaction:</strong> Failing to track a foundational metric—inventory burn rate against culturally specific dietary needs—causes a severe food shortage, turning away 15% of vulnerable families.</li>" +
+                            "<li><strong>Accountability Myopia:</strong> While over-quantification risks dubious signaling, rejecting data entirely produces <em>\"accountability myopia.\"</em><sup>1</sup></li>" +
+                            "<li><strong>Alignment is Crucial:</strong> Nonprofits must align measurement systems with operational realities; ignoring basic logistical data inadvertently harms the very population being served.</li>" +
+                          "</ul>",
+                    citation: "[1] Ebrahim, Alnoor, and V. Kasturi Rangan. 2014. \"What Impact? A Framework for Measuring the Scale and Scope of Social Performance.\" <em>California Management Review</em> 56 (1): 118-141."
+                }
+            },
+            3: {
+                0: {
+                    theme: 'theme-red',
+                    title: "Goodhart's Law",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>The Target Becomes the Goal:</strong> The moment Apex made 50,000 meals an explicit target tied to employee performance, the metric stopped measuring actual community impact.</li>" +
+                            "<li><strong>Flawed Assumptions:</strong> Measures inevitably fail when they assume signals are <em>\"honest, reliable, static, or interpreted accurately.\"</em><sup>1</sup></li>" +
+                            "<li><strong>Complete Decoupling:</strong> Over time, the heavily incentivized metric becomes completely <em>\"decoupled... from the organizational activities they mean to capture and evaluate.\"</em><sup>1</sup></li>" +
+                          "</ul>",
+                    citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 3."
+                }
+            },
+            4: {
+                1: {
+                    theme: 'theme-blue',
+                    title: "Community Reciprocity & Invisible Work",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>Diverting Resources:</strong> Forward's CEO Alex deliberately diverts resources away from the primary \"meals served\" metric to partner with a local legal clinic.</li>" +
+                            "<li><strong>The Invisibility of Care:</strong> In a managerialist system, this appears highly inefficient. As David Beer notes, <em>\"measurement draws attention to certain things... whilst pulling our gaze away from other aspects of the social and the personal.\"</em><sup>1</sup></li>" +
+                            "<li><strong>Community Reciprocity:</strong> By focusing on unquantifiable legal wellbeing rather than raw volume, Forward engages in <em>\"community reciprocity.\"</em><sup>2</sup></li>" +
+                            "<li><strong>Asset Diversification:</strong> Forward builds a multidimensional safety net, diversifying its assets, while Apex over-leverages a single, fragile metric.</li>" +
+                          "</ul>",
+                    citation: "<div style='margin-bottom: 8px;'>[1] Beer, David. 2016. <em>Metric Power</em>. London: Palgrave Macmillan, 60.</div><div>[2] Witmer, Hope, and Marcela Sarmiento Mellinger. 2016. \"Organizational Resilience: Nonprofit Organizations' Response to Change.\" <em>Work</em> 54: 255-265.</div>"
+                }
+            },
+            5: {
+                0: {
+                    theme: 'theme-red',
+                    title: "The Cat-and-Mouse Game",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>The Illusion of Success:</strong> While the city views Apex as a triumph, internal leadership and staff are locked in a dangerous game for <em>\"control over meaning.\"</em><sup>1</sup></li>" +
+                            "<li><strong>Competing Motives:</strong> The organization desperately seeks <em>\"an accurate and meaningful reflection of activity.\"</em><sup>1</sup></li>" +
+                            "<li><strong>Worker Adaptation:</strong> Conversely, workers under intense pressure adapt by <em>\"shaping the communication of activity in ways that meets situated goals\"</em><sup>1</sup> (e.g., survival and avoiding termination).</li>" +
+                          "</ul>",
+                    citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 9."
+                }
+            },
+            6: {
+                0: {
+                    theme: 'theme-red',
+                    title: "Dubious Signaling",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>Dishonest Metrics:</strong> Apex's massive growth is a dubious signal. Under extreme pressure, workers gamed the system to achieve genuine but profoundly dishonest numbers.</li>" +
+                            "<li><strong>Mission Decoupling:</strong> Robbie's technology hack completely <em>\"decoupled\"</em><sup>1</sup> the data tracking from the broad mission of protecting the vulnerable.</li>" +
+                            "<li><strong>A Breach of Public Trust:</strong> Honesty only at the point of service delivery following a dishonest process is dubious signaling.</li>" +
+                            "<li><strong>Questionable Data:</strong> The metric is fundamentally compromised because Robbie <em>\"engage[d] in behaviors with the goal of producing... questionable data.\"</em><sup>1</sup></li>" +
+                          "</ul>",
+                    citation: "[1] Treem, Jeffrey W., William C. Barley, Matthew S. Weber, and Joshua B. Barbour. 2023. \"Signaling and Meaning in Organizational Analytics: Coping with Goodhart's Law in an Era of Digitization and Datafication.\" <em>Journal of Computer-Mediated Communication</em> 28 (4): 3."
+                }
+            },
+            8: {
+                1: {
+                    theme: 'theme-blue',
+                    title: "Organizational Resilience",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>Absorbing the Shockwave:</strong> While Apex's fragile, metric-gamed foundation paralyzes its operations, Forward's diversified community assets absorb the sector-wide freeze.</li>" +
+                            "<li><strong>Continuity of Service:</strong> The legal clinic partnership maintains communication with beneficiaries, ensuring continuity of service and providing an impervious safety net.</li>" +
+                            "<li><strong>Defining Resilience:</strong> Organizational resilience is <em>\"the ability of an organization to respond and adapt to incremental changes and sudden disruptions while also constantly anticipating and preparing for future challenges in order to sustainably meet [the organization's] mission.\"</em><sup>1</sup></li>" +
+                          "</ul>",
+                    citation: "[1] Miller-Stevens, Katrina, Zachariah Benevento-Zahner, Gabrielle L'Esperance, and Jennifer A. Taylor. 2022. \"Assessing Multidimensional Approaches to Measure Program Outcomes in Human Service Organizations.\" <em>Voluntas: International Journal of Voluntary and Nonprofit Organizations</em> 33: 1214."
+                }
+            },
+            9: {
+                1: {
+                    theme: 'theme-blue',
+                    title: "Relational Slack Resources",
+                    text: "<ul class='concept-text-list'>" +
+                            "<li><strong>The Cost of Perfect Efficiency:</strong> Apex's fatal flaw was optimizing for perfect business efficiency without investing in long-term, interorganizational connections.</li>" +
+                            "<li><strong>Vulnerability Without Slack:</strong> Eliminating relational slack to hit a quota left Apex completely vulnerable to scandal, with no outside social capital to survive.</li>" +
+                            "<li><strong>Inefficiency as a Buffer:</strong> Forward's slower, relationship-based approach appeared inefficient, but it successfully generated vital <em>\"organizational slack.\"</em><sup>1</sup></li>" +
+                            "<li><strong>Adaptation and Survival:</strong> This relational slack acts as a crucial buffer, providing the resources and flexibility required to adapt when externally-controlled systems collapse.</li>" +
+                          "</ul>",
+                    citation: "[1] Witmer, Hope, and Marcela Sarmiento Mellinger. 2016. \"Organizational Resilience: Nonprofit Organizations' Response to Change.\" <em>Work</em> 54: 255-265. https://doi.org/10.3233/WOR-162303."
+                }
+            }
+        };
+
+        // --- Custom Plugin for Warning & Coffin Icons ---
+        const annotationsPlugin = {
+            id: 'annotations',
+            afterDatasetsDraw(chart) {
+                const ctx = chart.ctx;
+                const datasetIndex = 0; 
+                const meta = chart.getDatasetMeta(datasetIndex);
+
+                ctx.save();
+                ctx.font = '24px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                if (chart.data.labels.length - 1 >= 7) {
+                    const point7 = meta.data[7];
+                    if (point7) ctx.fillText('⚠️', point7.x, point7.y - 12);
+                }
+                if (chart.data.labels.length - 1 >= 12) {
+                    const point12 = meta.data[12];
+                    if (point12) ctx.fillText('⚰️', point12.x, point12.y - 12);
+                }
+                ctx.restore();
+            }
+        };
+
+        // --- Chart Setup ---
+        const ctx = document.getElementById('impactChart').getContext('2d');
+        const impactChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.slice(0, 1),
+                datasets: [
+                    {
+                        label: 'Apex Metro Relief',
+                        data: unethicalData.slice(0, 1),
+                        borderColor: '#ef4444', 
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true,
+                        segment: {
+                            borderDash: ctx => ctx.p0DataIndex >= 11 ? [5, 5] : undefined,
+                            borderColor: ctx => ctx.p0DataIndex >= 11 ? 'rgba(239, 68, 68, 0.3)' : '#ef4444',
+                        }
+                    },
+                    {
+                        label: 'Forward Community Pantry',
+                        data: ethicalData.slice(0, 1),
+                        borderColor: '#3b82f6', 
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                animation: { duration: 400 },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 1200000, 
+                        title: { display: true, text: 'Cumulative Meals Served' }
+                    }
+                },
+                // Interactivity: Click Specific Dots to Review Concepts
+                onClick: (event, activeElements) => {
+                    if (activeElements.length > 0) {
+                        const el = activeElements[0];
+                        const yearConcepts = academicConcepts[el.index];
+                        // Ensure they clicked the correct dataset point for that year
+                        if (yearConcepts && yearConcepts[el.datasetIndex]) {
+                            if (!isPaused) {
+                                isPaused = true;
+                                updateButtons();
+                                showAcademicConcept(el.index, el.datasetIndex, true); 
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [annotationsPlugin]
+        });
+
+        // --- Control State & UI Variables ---
+        const slider = document.getElementById('yearSlider');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const yearLabel = document.getElementById('yearLabel');
+        const eventCards = {
+            2: document.getElementById('event-2'),
+            4: document.getElementById('event-4'),
+            7: document.getElementById('event-7'),
+            10: document.getElementById('event-10'),
+            12: document.getElementById('event-12'),
+            13: document.getElementById('event-13')
+        };
+
+        let isPaused = true; 
+        let hasSeenBreach = false;
+        let hasSeenCrash = false;
+        let hasSeenDeath = false;
+        
+        // Track academic popups
+        let seenConcepts = { 2: false, 3: false, 4: false, 5: false, 6: false, 8: false, 9: false };
+
+        document.getElementById('narrative').innerText = narratives[0];
+        updateButtons();
+
+        function updateButtons() {
+            const val = parseInt(slider.value);
+            prevBtn.disabled = val === 0 || isPaused;
+            nextBtn.disabled = val === 13 || isPaused;
+            slider.disabled = isPaused;
+        }
+
+        function updateHistory(index) {
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            for(let i=0; i<=index; i++) {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>Year ${i}:</strong> ${narratives[i].substring(narratives[i].indexOf(':') + 2)}`;
+                list.appendChild(li);
+            }
+        }
+
+        // --- Swooping Modal Logic ---
+        function triggerSwoop(text, yearIndex) {
+            const floater = document.getElementById('floating-narrative');
+            const target = document.getElementById('narrative');
+            const btn = document.getElementById('fn-btn');
+            
+            floater.style.transition = 'none';
+            floater.style.top = '40%';
+            floater.style.left = '50%';
+            floater.style.transform = 'translate(-50%, -50%) scale(1)';
+            floater.style.display = 'block';
+            void floater.offsetWidth; 
+            floater.style.opacity = '1';
+            
+            document.getElementById('fn-text').innerText = text;
+            target.style.opacity = '0.3';
+            target.innerText = text; 
+
+            isPaused = true;
+            updateButtons();
+
+            btn.onclick = () => {
+                const targetRect = target.getBoundingClientRect();
+                const floaterRect = floater.getBoundingClientRect();
+                const deltaY = targetRect.top - floaterRect.top;
+                
+                floater.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                floater.style.transform = `translate(-50%, calc(-50% + ${deltaY + 20}px)) scale(0.8)`;
+                floater.style.opacity = '0';
+                
+                setTimeout(() => {
+                    floater.style.display = 'none';
+                    target.style.opacity = '1';
+                    
+                    updateHistory(yearIndex);
+                    isPaused = false;
+                    updateButtons();
+                }, 600); 
+            };
+        }
+
+        // --- Core Update Function ---
+        function updateChartAndUI(index) {
+            yearLabel.innerText = index;
+
+            for (let year in eventCards) {
+                eventCards[year].style.display = index >= parseInt(year) ? 'block' : 'none';
+            }
+
+            const targetMax = index === 13 ? 3000000 : 1200000;
+            if (impactChart.options.scales.y.max !== targetMax) {
+                impactChart.options.scales.y.max = targetMax;
+            }
+
+            impactChart.data.labels = labels.slice(0, index + 1);
+            impactChart.data.datasets[0].data = unethicalData.slice(0, index + 1);
+            impactChart.data.datasets[1].data = ethicalData.slice(0, index + 1);
+            impactChart.update();
+        }
+
+        // --- Cinematic Controllers ---
+        function dismissIntro() {
+            document.getElementById('intro-overlay').style.opacity = '0';
+            setTimeout(() => { 
+                document.getElementById('intro-overlay').style.display = 'none'; 
+                triggerSwoop(narratives[0], 0);
+            }, 500);
+        }
+
+        function nextBreachOverlay(currentStep) {
+            document.getElementById(`breach-overlay-${currentStep}`).style.display = 'none';
+            document.getElementById(`breach-overlay-${currentStep + 1}`).style.display = 'flex';
+            if (currentStep === 1) {
+                document.getElementById('breach-overlay-2').style.opacity = '1';
+            }
+        }
+
+        function finishBreachOverlay() {
+            const overlay = document.getElementById('breach-overlay-3');
+            overlay.style.opacity = '0';
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                seenConcepts[2] = true;
+                showAcademicConcept(2, 0, false); // Triggers Apex's concept
+            }, 500);
+        }
+
+        function dismissCrash() {
+            const overlay = document.getElementById('crash-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                triggerSwoop(narratives[7], 7);
+            }, 500);
+        }
+
+        function dismissDeath() {
+            const overlay = document.getElementById('death-overlay');
+            overlay.style.opacity = '0';
+            window.speechSynthesis.cancel(); 
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                triggerSwoop(narratives[12], 12);
+            }, 500);
+        }
+
+        // --- Academic Concept Engine ---
+        function showAcademicConcept(yearIndex, datasetIndex, isRetrigger = false) {
+            const conceptInfo = academicConcepts[yearIndex][datasetIndex];
+            const meta = impactChart.getDatasetMeta(datasetIndex);
+            const point = meta.data[yearIndex];
+
+            if (point) {
+                const anchor = document.getElementById('concept-anchor');
+                const box = document.getElementById('concept-box');
+                const line = document.getElementById('concept-line');
+                
+                anchor.className = conceptInfo.theme;
+                line.className = 'concept-line'; // Reset classes
+                
+                document.getElementById('concept-title').innerHTML = conceptInfo.title;
+                document.getElementById('concept-text').innerHTML = conceptInfo.text;
+                document.getElementById('concept-citation').innerHTML = conceptInfo.citation;
+
+                // Smart Line Direction: If point is high (Years 5 and 6), shoot down to prevent cutoff
+                if (yearIndex === 5 || yearIndex === 6) {
+                    line.classList.add('shoot-down');
+                    box.style.bottom = 'auto';
+                    box.style.top = '40px';
+                } else {
+                    line.classList.add('shoot-up');
+                    box.style.top = 'auto';
+                    box.style.bottom = '40px';
+                }
+
+                // Smart Box Orientation: Avoid left/right screen edges
+                if (yearIndex >= 7) {
+                    box.style.left = 'auto';
+                    box.style.right = '-20px';
+                    box.style.transformOrigin = 'bottom right';
+                    box.style.marginLeft = '0';
+                    box.style.borderRadius = '8px 8px 0 8px';
+                } else if (yearIndex === 6) {
+                    box.style.left = 'auto';
+                    box.style.right = '-20px';
+                    box.style.transformOrigin = 'top right';
+                    box.style.marginLeft = '0';
+                    box.style.borderRadius = '8px 0 8px 8px';
+                } else if (yearIndex <= 4) {
+                    box.style.right = 'auto';
+                    box.style.left = '-20px';
+                    box.style.transformOrigin = 'bottom left';
+                    box.style.marginLeft = '0';
+                    box.style.borderRadius = '0 8px 8px 8px';
+                } else {
+                    box.style.right = 'auto';
+                    box.style.left = '50%';
+                    box.style.transformOrigin = 'top center';
+                    box.style.marginLeft = '-210px'; // Half of 420px width
+                    box.style.borderRadius = '8px';
+                }
+
+                anchor.style.left = point.x + 'px';
+                anchor.style.top = point.y + 'px';
+                anchor.style.display = 'block';
+                
+                anchor.classList.remove('animate');
+                void anchor.offsetWidth; // Force Reflow
+                anchor.classList.add('animate');
+                anchor.style.opacity = '1';
+
+                document.getElementById('concept-btn').onclick = () => {
+                    anchor.style.opacity = '0';
+                    setTimeout(() => {
+                        anchor.style.display = 'none';
+                        
+                        // Smart-Chaining for Year 2: Move from Apex (0) to Forward (1) automatically
+                        if (yearIndex === 2 && datasetIndex === 0 && !isRetrigger) {
+                            showAcademicConcept(2, 1, false);
+                        } else {
+                            if (!isRetrigger) {
+                                triggerSwoop(narratives[yearIndex], yearIndex);
+                            } else {
+                                isPaused = false;
+                                updateButtons();
+                            }
+                        }
+                    }, 500);
+                };
+            }
+        }
+
+        // --- Main Timeline Router ---
+        function handleTimeChange(newVal) {
+            if (isPaused) {
+                slider.value = parseInt(yearLabel.innerText); 
+                return;
+            }
+
+            let currentYearIndex = parseInt(newVal);
+            let oldYearIndex = parseInt(yearLabel.innerText);
+
+            // Reset flags if navigating backward
+            if (currentYearIndex < oldYearIndex) {
+                if (currentYearIndex < 2) { hasSeenBreach = false; seenConcepts[2] = false; }
+                if (currentYearIndex < 3) seenConcepts[3] = false;
+                if (currentYearIndex < 4) seenConcepts[4] = false;
+                if (currentYearIndex < 5) seenConcepts[5] = false;
+                if (currentYearIndex < 6) seenConcepts[6] = false;
+                if (currentYearIndex < 7) hasSeenCrash = false;
+                if (currentYearIndex < 8) seenConcepts[8] = false;
+                if (currentYearIndex < 9) seenConcepts[9] = false;
+                if (currentYearIndex < 12) hasSeenDeath = false;
+            }
+
+            // Year 2 cinematic
+            if (currentYearIndex >= 2 && !hasSeenBreach) {
+                hasSeenBreach = true;
+                isPaused = true;
+                slider.value = 2; 
+                updateChartAndUI(2);
+
+                const breachOverlay1 = document.getElementById('breach-overlay-1');
+                breachOverlay1.style.display = 'flex';
+                void breachOverlay1.offsetWidth; 
+                breachOverlay1.style.opacity = '1';
+                updateButtons();
+                return;
+            }
+            
+            // Year 7 cinematic
+            if (currentYearIndex >= 7 && !hasSeenCrash) {
+                hasSeenCrash = true;
+                isPaused = true;
+                slider.value = 7; 
+                updateChartAndUI(7);
+
+                const crashOverlay = document.getElementById('crash-overlay');
+                crashOverlay.style.display = 'flex';
+                setTimeout(() => { crashOverlay.style.opacity = '1'; }, 50);
+                updateButtons();
+                return;
+            }
+            
+            // Year 12 cinematic
+            if (currentYearIndex >= 12 && !hasSeenDeath) {
+                hasSeenDeath = true;
+                isPaused = true;
+                slider.value = 12; 
+                updateChartAndUI(12);
+
+                const deathOverlay = document.getElementById('death-overlay');
+                deathOverlay.style.display = 'flex';
+                setTimeout(() => { 
+                    deathOverlay.style.opacity = '1'; 
+                    playOperatorMessage(); 
+                }, 50);
+                updateButtons();
+                return;
+            }
+
+            // Dynamic Academic Concepts (Years 2, 3, 4, 5, 6, 8, 9)
+            // Notice Year 2 is NOT auto-triggered here, to protect the cinematic
+            if (academicConcepts[currentYearIndex] && !seenConcepts[currentYearIndex] && currentYearIndex !== 2) {
+                seenConcepts[currentYearIndex] = true;
+                isPaused = true;
+                slider.value = currentYearIndex;
+                updateChartAndUI(currentYearIndex);
+                
+                // Determine which dataset to auto-show based on availability (defaults to Apex if both exist, otherwise Forward)
+                let defaultDataset = academicConcepts[currentYearIndex][0] ? 0 : 1;
+                setTimeout(() => { showAcademicConcept(currentYearIndex, defaultDataset, false); }, 450); 
+                updateButtons();
+                return;
+            }
+
+            // Standard Path
+            slider.value = currentYearIndex;
+            updateChartAndUI(currentYearIndex);
+            triggerSwoop(narratives[currentYearIndex], currentYearIndex);
+        }
+
+        // --- Event Listeners ---
+        slider.addEventListener('input', (e) => handleTimeChange(e.target.value));
+
+        prevBtn.addEventListener('click', () => {
+            if (!isPaused && parseInt(slider.value) > 0) {
+                handleTimeChange(parseInt(slider.value) - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (!isPaused && parseInt(slider.value) < 13) {
+                handleTimeChange(parseInt(slider.value) + 1);
+            }
+        });
+
+        // --- Global Keyboard Navigation ---
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') {
+                const intro = document.getElementById('intro-overlay');
+                const b1 = document.getElementById('breach-overlay-1');
+                const b2 = document.getElementById('breach-overlay-2');
+                const b3 = document.getElementById('breach-overlay-3');
+                const crash = document.getElementById('crash-overlay');
+                const death = document.getElementById('death-overlay');
+                const concept = document.getElementById('concept-anchor');
+                const float = document.getElementById('floating-narrative');
+
+                if (intro.style.display !== 'none' && intro.style.opacity !== '0') { dismissIntro(); }
+                else if (b1.style.display === 'flex' && b1.style.opacity !== '0') { nextBreachOverlay(1); }
+                else if (b2.style.display === 'flex' && b2.style.opacity !== '0') { nextBreachOverlay(2); }
+                else if (b3.style.display === 'flex' && b3.style.opacity !== '0') { finishBreachOverlay(); }
+                else if (crash.style.display === 'flex' && crash.style.opacity !== '0') { dismissCrash(); }
+                else if (death.style.display === 'flex' && death.style.opacity !== '0') { dismissDeath(); }
+                else if (concept.style.display === 'block' && concept.style.opacity !== '0') { document.getElementById('concept-btn').click(); }
+                else if (float.style.display === 'block' && float.style.opacity !== '0') { document.getElementById('fn-btn').click(); }
+                else if (!isPaused && parseInt(slider.value) < 13) { document.getElementById('nextBtn').click(); }
+                
+            } else if (e.key === 'ArrowLeft') {
+                const intro = document.getElementById('intro-overlay');
+                const b1 = document.getElementById('breach-overlay-1');
+                const b2 = document.getElementById('breach-overlay-2');
+                const b3 = document.getElementById('breach-overlay-3');
+                const crash = document.getElementById('crash-overlay');
+                const death = document.getElementById('death-overlay');
+                const concept = document.getElementById('concept-anchor');
+                const float = document.getElementById('floating-narrative');
+
+                if (intro.style.display !== 'none' && intro.style.opacity !== '0') { 
+                    // Do nothing
+                }
+                else if (b3.style.display === 'flex' && b3.style.opacity !== '0') { 
+                    b3.style.display = 'none';
+                    b2.style.display = 'flex';
+                }
+                else if (b2.style.display === 'flex' && b2.style.opacity !== '0') { 
+                    b2.style.display = 'none';
+                    b1.style.display = 'flex';
+                    b1.style.opacity = '1';
+                }
+                else if (b1.style.display === 'flex' && b1.style.opacity !== '0') { 
+                    b1.style.opacity = '0';
+                    setTimeout(() => { b1.style.display = 'none'; isPaused = false; handleTimeChange(1); }, 300);
+                }
+                else if (crash.style.display === 'flex' && crash.style.opacity !== '0') { 
+                    crash.style.opacity = '0';
+                    setTimeout(() => { crash.style.display = 'none'; isPaused = false; handleTimeChange(6); }, 300);
+                }
+                else if (death.style.display === 'flex' && death.style.opacity !== '0') { 
+                    death.style.opacity = '0';
+                    window.speechSynthesis.cancel();
+                    setTimeout(() => { death.style.display = 'none'; isPaused = false; handleTimeChange(11); }, 300);
+                }
+                else if (concept.style.display === 'block' && concept.style.opacity !== '0') { 
+                    concept.style.opacity = '0';
+                    setTimeout(() => { 
+                        concept.style.display = 'none'; 
+                        isPaused = false; 
+                        handleTimeChange(parseInt(slider.value) - 1); 
+                    }, 300);
+                }
+                else if (float.style.display === 'block' && float.style.opacity !== '0') { 
+                    float.style.opacity = '0';
+                    setTimeout(() => {
+                        float.style.display = 'none';
+                        document.getElementById('narrative').style.opacity = '1';
+                        isPaused = false;
+                        let curr = parseInt(slider.value);
+                        handleTimeChange(curr > 0 ? curr - 1 : 0);
+                    }, 300);
+                }
+                else if (!isPaused && parseInt(slider.value) > 0) { 
+                    document.getElementById('prevBtn').click(); 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
